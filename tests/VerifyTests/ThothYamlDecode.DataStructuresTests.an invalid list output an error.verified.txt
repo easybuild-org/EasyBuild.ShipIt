@@ -1,0 +1,11 @@
+﻿{
+  Case: Error,
+  Fields: [    
+Error at: `$`
+Expecting a list but instead got:
+not a list:
+  name: Maxime
+  age: 30
+
+  ]
+}

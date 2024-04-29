@@ -1,0 +1,9 @@
+﻿{
+  Case: Error,
+  Fields: [    
+Error at: `$`
+Expecting a field 'name' but instead got:
+age: 30
+
+  ]
+}

@@ -1,0 +1,16 @@
+﻿{
+  Case: Error,
+  Fields: [    
+The following errors were found:
+
+Error at: `$.[0]`
+Expecting int but instead got:
+null
+
+Reason: Could not parse integer
+Error at: `$.[0]`
+Expecting an object but instead got:
+null
+
+  ]
+}

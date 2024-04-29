@@ -1,0 +1,3 @@
+Hello this is a random file that is used in tests.
+
+Last released version: 1.0.0

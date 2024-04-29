@@ -1,0 +1,6 @@
+﻿{
+  "version": "3.4.5",
+  "script": {
+    "test": "echo test"
+  }
+}

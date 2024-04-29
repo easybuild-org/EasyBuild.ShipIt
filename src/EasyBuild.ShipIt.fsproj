@@ -1,0 +1,62 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net10.0</TargetFramework>
+        <RollForward>Major</RollForward>
+        <PackAsTool>true</PackAsTool>
+        <ToolCommandName>shipit</ToolCommandName>
+        <ChangelogFile>$(MSBuildThisFileDirectory)../CHANGELOG.md</ChangelogFile>
+    </PropertyGroup>
+    <ItemGroup>
+        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+            <_Parameter1>EasyBuild.ShipIt.Tests</_Parameter1>
+        </AssemblyAttribute>
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Thoth.Yaml/Types.fs" />
+        <Compile Include="Thoth.Yaml/Decode.fs" />
+        <Compile Include="Thoth.Yaml/Encode.fs" />
+        <Compile Include="Json/JsonPointer.fs" />
+        <Compile Include="Json/JsonPatch.fs" />
+        <Compile Include="Log.fs" />
+        <Compile Include="Extensions/Task.fs" />
+        <Compile Include="Extensions/String.fs" />
+        <Compile Include="Extensions/CmdLine.fs" />
+        <Compile Include="Tools/Git.fs" />
+        <Compile Include="Tools/Gh.fs" />
+        <Compile Include="Types/Global.fs" />
+        <Compile Include="Types/Settings.fs" />
+        <Compile Include="Types/Orchestrator.fs" />
+        <Compile Include="Orchestrators/Github.fs" />
+        <Compile Include="ConfigLoader.fs" />
+        <Compile Include="Generate/Types.fs" />
+        <Compile Include="Generate/Verify.fs" />
+        <Compile Include="Generate/Changelog.fs" />
+        <Compile Include="Generate/Updater.fs" />
+        <Compile Include="Generate/ReleaseContext.fs" />
+        <Compile Include="Generate/PullRequest.fs" />
+        <Compile Include="Commands/Version.fs" />
+        <Compile Include="Commands/Default.fs" />
+        <Compile Include="Commands/Github.fs" />
+        <Compile Include="Main.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="BlackFox.CommandLine" />
+        <PackageReference Include="DotNet.Glob" />
+        <PackageReference Include="EasyBuild.CommitParser" />
+        <PackageReference Include="EasyBuild.PackageReleaseNotes.Tasks">
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+          <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="FsToolkit.ErrorHandling" />
+        <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" />
+        <PackageReference Include="Semver" />
+        <PackageReference Include="SimpleExec" />
+        <PackageReference Include="Spectre.Console.Cli" />
+        <PackageReference Include="Thoth.Json.System.Text.Json" />
+        <PackageReference Include="YamlDotNet" />
+    </ItemGroup>
+
+</Project>

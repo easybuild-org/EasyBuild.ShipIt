@@ -1,0 +1,10 @@
+﻿{
+  Case: Error,
+  Fields: [    
+Error at: `$.[1]`
+Expecting int but instead got:
+two
+
+Reason: Could not parse integer
+  ]
+}

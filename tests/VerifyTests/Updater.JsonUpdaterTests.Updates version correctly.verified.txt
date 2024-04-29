@@ -1,0 +1,6 @@
+﻿{
+    "scripts": {},
+    "metadata": {
+        "version": "7.8.9"
+    }
+}

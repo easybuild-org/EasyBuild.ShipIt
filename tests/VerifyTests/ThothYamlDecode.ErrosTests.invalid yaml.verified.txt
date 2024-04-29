@@ -1,0 +1,6 @@
+﻿{
+  Case: Error,
+  Fields: [
+    Given an invalid YAML: While scanning a plain scalar value, found invalid mapping.
+  ]
+}

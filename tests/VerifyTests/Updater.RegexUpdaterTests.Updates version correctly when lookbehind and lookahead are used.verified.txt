@@ -1,0 +1,6 @@
+﻿<Project>
+    <ItemGroup>
+        <Title>Hello</Title>
+        <Version>5.6.7</Version>
+    </ItemGroup>
+</Project>

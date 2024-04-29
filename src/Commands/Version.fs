@@ -1,0 +1,24 @@
+module EasyBuild.ShipIt.Commands.Version
+
+open Spectre.Console.Cli
+open System.Reflection
+open EasyBuild.ShipIt.Types.Settings
+
+type VersionCommand() =
+    inherit Command<VersionSettings>()
+    interface ICommandLimiter<VersionSettings>
+
+    override __.Execute(_, _, _) =
+        let assembly = Assembly.GetEntryAssembly()
+
+        let versionAttribute =
+            assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()
+
+        let version =
+            if versionAttribute <> null then
+                versionAttribute.InformationalVersion
+            else
+                "?"
+
+        Log.info ($"Version: {version}")
+        0

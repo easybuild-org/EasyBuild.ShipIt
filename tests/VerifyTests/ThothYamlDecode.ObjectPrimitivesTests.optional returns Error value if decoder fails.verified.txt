@@ -1,0 +1,10 @@
+﻿{
+  Case: Error,
+  Fields: [    
+Error at: `$.age`
+Expecting int but instead got:
+thirty
+
+Reason: Could not parse integer
+  ]
+}
