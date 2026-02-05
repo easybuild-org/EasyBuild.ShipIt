@@ -1,19 +1,3 @@
----
-last_commit_released: 7cc8f261bba7cb18b32ebf997c74cf060213dc55
-name: Project A
-include:
-  - ../SharedLibrary/
-updaters:
-  - replace-regex:
-    file: CHANGELOG.md
-    regex: '## \d+\.\d+\.\d+'
-  - regex:
-    file: README.md
-    regex: '## \d+\.\d+\.\d+'
-  - package.json:
-    file: package.json
----
-
 # Changelog
 
 All notable changes to this project will be documented in this file.
