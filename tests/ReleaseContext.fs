@@ -565,7 +565,7 @@ type ComputeVersionTests() =
                 Versions = [ SemVersion(0, 0, 0) ]
                 Metadata =
                     { ChangelogMetadata.Empty with
-                        PreReleasePrefix = Some "beta"
+                        PreRelease = Some "beta"
                     }
             }
 
@@ -612,7 +612,7 @@ type ComputeVersionTests() =
                 Versions = [ SemVersion(0, 0, 0) ]
                 Metadata =
                     { ChangelogMetadata.Empty with
-                        PreReleasePrefix = Some "beta"
+                        PreRelease = Some "beta"
                     }
             }
 
@@ -625,8 +625,7 @@ type ComputeVersionTests() =
     member _.``If user request a pre-release, should bump patch and make start a pre-release if previous version was stable and changes include only bug fixes``
         ()
         =
-        let settings =
-            DefaultCommandSettings()
+        let settings = DefaultCommandSettings()
 
         let commits: Git.Commit list =
             [
@@ -658,10 +657,14 @@ type ComputeVersionTests() =
                 File = FileInfo(Workspace.``valid_changelog.md``)
                 Content = STANDARD_CHANGELOG
                 Versions = [ SemVersion(0, 0, 0) ]
-                Metadata = { ChangelogMetadata.Empty with PreReleasePrefix = Some "beta" }
+                Metadata =
+                    { ChangelogMetadata.Empty with
+                        PreRelease = Some "beta"
+                    }
             }
 
-        let actual = ReleaseContext.computeVersion settings changelogInfo commits (SemVersion(2, 2, 45))
+        let actual =
+            ReleaseContext.computeVersion settings changelogInfo commits (SemVersion(2, 2, 45))
 
         Expect.equal actual (Some(SemVersion.ParsedFrom(2, 2, 46, "beta.1")))
 
@@ -669,8 +672,7 @@ type ComputeVersionTests() =
     member _.``If user request a pre-release, should increment the pre-release number if previous version was a pre-release (check for major version)``
         ()
         =
-        let settings =
-            DefaultCommandSettings()
+        let settings = DefaultCommandSettings()
 
         let commits: Git.Commit list =
             [ Git.Commit.Create("49c0699af98a67f1e8efcac8b1467b283a244aa8", "fix!: fix a bug") ]
@@ -690,7 +692,10 @@ type ComputeVersionTests() =
                 File = FileInfo(Workspace.``valid_changelog.md``)
                 Content = STANDARD_CHANGELOG
                 Versions = [ SemVersion(0, 0, 0) ]
-                Metadata = { ChangelogMetadata.Empty with PreReleasePrefix = Some "beta" }
+                Metadata =
+                    { ChangelogMetadata.Empty with
+                        PreRelease = Some "beta"
+                    }
             }
 
         let actual =
@@ -706,8 +711,7 @@ type ComputeVersionTests() =
     member _.``If user request a pre-release, should increment the pre-release number if previous version was a pre-release (check for minor version)``
         ()
         =
-        let settings =
-            DefaultCommandSettings()
+        let settings = DefaultCommandSettings()
 
         let commits: Git.Commit list =
             [
@@ -739,7 +743,10 @@ type ComputeVersionTests() =
                 File = FileInfo(Workspace.``valid_changelog.md``)
                 Content = STANDARD_CHANGELOG
                 Versions = [ SemVersion(0, 0, 0) ]
-                Metadata = { ChangelogMetadata.Empty with PreReleasePrefix = Some "beta" }
+                Metadata =
+                    { ChangelogMetadata.Empty with
+                        PreRelease = Some "beta"
+                    }
             }
 
         let actual =
@@ -755,8 +762,7 @@ type ComputeVersionTests() =
     member _.``If user request a pre-release, should increment the pre-release number if previous version was a pre-release (check for patch version)``
         ()
         =
-        let settings =
-            DefaultCommandSettings()
+        let settings = DefaultCommandSettings()
 
         let commits: Git.Commit list =
             [
@@ -788,7 +794,10 @@ type ComputeVersionTests() =
                 File = FileInfo(Workspace.``valid_changelog.md``)
                 Content = STANDARD_CHANGELOG
                 Versions = [ SemVersion(0, 0, 0) ]
-                Metadata = { ChangelogMetadata.Empty with PreReleasePrefix = Some "beta" }
+                Metadata =
+                    { ChangelogMetadata.Empty with
+                        PreRelease = Some "beta"
+                    }
             }
 
         let actual =
@@ -912,8 +921,7 @@ type ComputeVersionTests() =
     member _.``If pre-release identifier is different start a new pre-release from 1 (check for major)``
         ()
         =
-        let settings =
-            DefaultCommandSettings()
+        let settings = DefaultCommandSettings()
 
         let commits: Git.Commit list =
             [ Git.Commit.Create("49c0699af98a67f1e8efcac8b1467b283a244aa8", "fix: fix a bug") ]
@@ -933,7 +941,10 @@ type ComputeVersionTests() =
                 File = FileInfo(Workspace.``valid_changelog.md``)
                 Content = STANDARD_CHANGELOG
                 Versions = [ SemVersion(0, 0, 0) ]
-                Metadata = { ChangelogMetadata.Empty with PreReleasePrefix = Some "alpha" }
+                Metadata =
+                    { ChangelogMetadata.Empty with
+                        PreRelease = Some "alpha"
+                    }
             }
 
         let actual =
@@ -949,8 +960,7 @@ type ComputeVersionTests() =
     member _.``If pre-release identifier is different start a new pre-release from 1 (check for minor)``
         ()
         =
-        let settings =
-            DefaultCommandSettings()
+        let settings = DefaultCommandSettings()
 
         let commits: Git.Commit list =
             [ Git.Commit.Create("49c0699af98a67f1e8efcac8b1467b283a244aa8", "fix: fix a bug") ]
@@ -970,7 +980,10 @@ type ComputeVersionTests() =
                 File = FileInfo(Workspace.``valid_changelog.md``)
                 Content = STANDARD_CHANGELOG
                 Versions = [ SemVersion(0, 0, 0) ]
-                Metadata = { ChangelogMetadata.Empty with PreReleasePrefix = Some "alpha" }
+                Metadata =
+                    { ChangelogMetadata.Empty with
+                        PreRelease = Some "alpha"
+                    }
             }
 
         let actual =
@@ -986,8 +999,7 @@ type ComputeVersionTests() =
     member _.``If pre-release identifier is different start a new pre-release from 1 (check for patch)``
         ()
         =
-        let settings =
-            DefaultCommandSettings()
+        let settings = DefaultCommandSettings()
 
         let commits: Git.Commit list =
             [ Git.Commit.Create("49c0699af98a67f1e8efcac8b1467b283a244aa8", "fix: fix a bug") ]
@@ -1007,7 +1019,10 @@ type ComputeVersionTests() =
                 File = FileInfo(Workspace.``valid_changelog.md``)
                 Content = STANDARD_CHANGELOG
                 Versions = [ SemVersion(0, 0, 0) ]
-                Metadata = { ChangelogMetadata.Empty with PreReleasePrefix = Some "alpha" }
+                Metadata =
+                    { ChangelogMetadata.Empty with
+                        PreRelease = Some "alpha"
+                    }
             }
 
         let actual =
@@ -1018,6 +1033,73 @@ type ComputeVersionTests() =
                 (SemVersion(2, 2, 45).WithPrereleaseParsedFrom("beta.10"))
 
         Expect.equal actual (Some(SemVersion.ParsedFrom(2, 2, 45, "alpha.1")))
+
+    [<Test>]
+    member _.``Pre-release can be configured from CLI settings``() =
+        let settings =
+            DefaultCommandSettings(PreRelease = FlagValue(Value = "alpha", IsSet = true))
+
+        let commits: Git.Commit list =
+            [ Git.Commit.Create("49c0699af98a67f1e8efcac8b1467b283a244aa8", "fix: fix a bug") ]
+
+        let commits: CommitForRelease list =
+            [
+                {
+                    OriginalCommit = commits[0]
+                    SemanticCommit =
+                        Parser.tryParseCommitMessage CommitParserConfig.Default commits[0].RawBody
+                        |> Result.valueOr failwith
+                }
+            ]
+
+        let changelogInfo =
+            {
+                File = FileInfo(Workspace.``valid_changelog.md``)
+                Content = STANDARD_CHANGELOG
+                Versions = [ SemVersion(0, 0, 0) ]
+                Metadata = ChangelogMetadata.Empty
+            }
+
+        let actual =
+            ReleaseContext.computeVersion settings changelogInfo commits (SemVersion(2, 2, 45))
+
+        Expect.equal actual (Some(SemVersion.ParsedFrom(2, 2, 46, "alpha.1")))
+
+    [<Test>]
+    member _.``If pre-release is configured both in CLI settings and changelog metadata, CLI settings should take precedence``
+        ()
+        =
+        let settings =
+            DefaultCommandSettings(PreRelease = FlagValue(Value = "alpha", IsSet = true))
+
+        let commits: Git.Commit list =
+            [ Git.Commit.Create("49c0699af98a67f1e8efcac8b1467b283a244aa8", "fix: fix a bug") ]
+
+        let commits: CommitForRelease list =
+            [
+                {
+                    OriginalCommit = commits[0]
+                    SemanticCommit =
+                        Parser.tryParseCommitMessage CommitParserConfig.Default commits[0].RawBody
+                        |> Result.valueOr failwith
+                }
+            ]
+
+        let changelogInfo =
+            {
+                File = FileInfo(Workspace.``valid_changelog.md``)
+                Content = STANDARD_CHANGELOG
+                Versions = [ SemVersion(0, 0, 0) ]
+                Metadata =
+                    { ChangelogMetadata.Empty with
+                        PreRelease = Some "beta"
+                    }
+            }
+
+        let actual =
+            ReleaseContext.computeVersion settings changelogInfo commits (SemVersion(2, 2, 45))
+
+        Expect.equal actual (Some(SemVersion.ParsedFrom(2, 2, 46, "alpha.1")))
 
 let inline private verifyChangelogAndExtraFile changelogPath extraFilePath =
     let changelogContent = File.ReadAllText(changelogPath)

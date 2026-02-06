@@ -2,6 +2,7 @@ namespace EasyBuild.ShipIt.Types
 
 open Thoth.Yaml
 open Semver
+
 [<RequireQualifiedAccess>]
 type RemoteHost =
     | GitHub
@@ -156,7 +157,7 @@ type ChangelogMetadata =
         LastCommitReleased: string option
         Include: string list
         Exclude: string list
-        PreReleasePrefix: string option
+        PreRelease: string option
         Priority: int option
         Name: string option
         Updaters: ChangelogMetadata.Updater list
@@ -168,7 +169,7 @@ type ChangelogMetadata =
             LastCommitReleased = None
             Include = []
             Exclude = []
-            PreReleasePrefix = None
+            PreRelease = None
             Priority = None
             Name = None
             Updaters = []
@@ -181,7 +182,9 @@ type ChangelogMetadata =
             |> Decode.andThen (fun version ->
                 match SemVersion.TryParse(version, SemVersionStyles.Strict) with
                 | true, semVersion -> Decode.succeed semVersion
-                | false, _ -> Decode.fail "Unable to parse version. Please make sure it is a valid semantic version, e.g. 1.0.0 or 2.1.3-beta.1"
+                | false, _ ->
+                    Decode.fail
+                        "Unable to parse version. Please make sure it is a valid semantic version, e.g. 1.0.0 or 2.1.3-beta.1"
             )
 
         Decode.object (fun get ->
@@ -193,13 +196,13 @@ type ChangelogMetadata =
                 Exclude =
                     get.Optional.Field "exclude" (Decode.list Decode.string)
                     |> Option.defaultValue []
-                PreReleasePrefix = get.Optional.Field "pre_release" Decode.string
+                PreRelease = get.Optional.Field "pre_release" Decode.string
                 Priority = get.Optional.Field "priority" Decode.int
                 Name = get.Optional.Field "name" Decode.string
                 Updaters =
                     get.Optional.Field "updaters" (Decode.list ChangelogMetadata.Updater.Decoder)
                     |> Option.defaultValue []
-                ForceVersion =  get.Optional.Field "force_version" versionDecoder
+                ForceVersion = get.Optional.Field "force_version" versionDecoder
             }
         )
 
@@ -209,7 +212,7 @@ type ChangelogMetadata =
             "last_commit_released"
             metadata.LastCommitReleased
             (Encode.lossyOption Encode.string)
-        |> Encode.Object.addFieldIfSome "pre_release" metadata.PreReleasePrefix Encode.string
+        |> Encode.Object.addFieldIfSome "pre_release" metadata.PreRelease Encode.string
         |> Encode.Object.addFieldIfSome "priority" metadata.Priority Encode.int
         |> Encode.Object.addFieldIfSome "name" metadata.Name Encode.string
         |> Encode.Object.addFieldIfNotEmpty "include" (metadata.Include |> List.map Encode.string)

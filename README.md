@@ -66,6 +66,7 @@ OPTIONS:
                                                    you can provide a prefix for the beta version. Default is 'beta'
         --force-version <VERSION>                  Force the version to be used in the changelog
         --skip-pull-request                        Skip creating a pull request updating the changelogs
+        --pre-release [PREFIX]          beta       Indicate that the generated version is a pre-release version. Optionally, you can provide a prefix for the beta version. Default is 'beta'
     -v, --version                                  Show version information
 
 COMMANDS:
@@ -123,7 +124,7 @@ You can mix different types of commits, the highest version will be used (`break
 
 ### Pre-release versions
 
-A pre-release will be generated if you set [`pre_release`](#pre_release) configuration.
+A pre-release will be generated if you set [`pre_release`](#pre_release) configuration or if you pass `--pre-release` CLI option.
 
 Rules are the following:
 
@@ -172,7 +173,7 @@ For this reason, while working on a pre-release, it is advised to work in a sepa
 
 ### Moving out of pre-release
 
-If you want to move out of pre-release, you simply need to remove the [`pre_release`](#pre_release) configuration.
+If you want to move out of pre-release, you need to remove the [`pre_release`](#pre_release) configuration or stop passing the `--pre-release` CLI option.
 
 Then the next version will be released using the base version of the previous pre-release.
 
@@ -193,7 +194,7 @@ If the computed version is not what you want, you can use [`force_version`](#for
 
 ## Configuration
 
-EasyBuild.ShipIt configuration is set a front matter in your `CHANGELOG.md` file(s).
+EasyBuild.ShipIt configuration lives as a front matter in your `CHANGELOG.md` file(s).
 
 ```text
 ---
@@ -409,6 +410,16 @@ It means that 2 projects will be released, `project-a` and `project-b`. By defau
 If you want to include commits from the `Shared` directory for both projects, you can use the `include` configuration to include the `Shared` directory for both changelog files.
 
 Learn more about the `include` configuration in the [Configuration](#configuration) section.
+
+## Recipes
+
+### Prod / staging environments
+
+When working with production and staging environments, you can use the `pre_release` configuration to generate pre-release versions for the staging environment and stable versions for the production environment.
+
+To do that, you need use `--pre-release` CLI option in your staging environment and not use it in your production environment.
+
+We want to use the CLI option here instead of the configuration as it allows to easily switch between pre-release and stable versions without having to change the configuration file.
 
 ## Exit codes
 

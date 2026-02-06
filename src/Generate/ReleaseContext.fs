@@ -24,8 +24,16 @@ let computeVersion
     (refVersion: SemVersion)
     =
 
+    // Detect if we are doing a pre-release based on the settings or the changelog metadata
+    // CLI settings take precedence over the changelog metadata
+    let preRelease =
+        if settings.PreRelease.IsSet then
+            Some settings.PreRelease.Value
+        else
+            changelog.Metadata.PreRelease
+
     if refVersion.IsPrerelease then
-        match changelog.Metadata.PreReleasePrefix with
+        match preRelease with
         | Some preReleasePrefix ->
             // If the pre-release identifier is the same, then increment the pre-release number
             // Before: 2.0.0-beta.1 -> After: 2.0.0-beta.2
@@ -34,10 +42,7 @@ let computeVersion
 
                 if index >= 0 then
                     let preReleaseNumber =
-                        refVersion.Prerelease.Substring(
-                            index + preReleasePrefix.Length + 1
-                        )
-                        |> int
+                        refVersion.Prerelease.Substring(index + preReleasePrefix.Length + 1) |> int
 
                     refVersion.WithPrereleaseParsedFrom(
                         preReleasePrefix + "." + (preReleaseNumber + 1).ToString()
@@ -57,8 +62,7 @@ let computeVersion
         // If the last version is a release, and user requested a stable release
         // Then, remove the pre-release identifier
         // Example: 2.0.0-beta.1 -> 2.0.0
-        | None ->
-            refVersion.WithoutPrereleaseOrMetadata() |> Some
+        | None -> refVersion.WithoutPrereleaseOrMetadata() |> Some
 
     else
         let shouldBumpMajor =
@@ -97,7 +101,7 @@ let computeVersion
         // - Major bump needed: 2.0.0 -> 3.0.0-beta.1
         // - Minor bump needed: 2.0.0 -> 2.1.0-beta.1
         // - Patch bump needed: 2.0.0 -> 2.0.1-beta.1
-        match changelog.Metadata.PreReleasePrefix with
+        match preRelease with
         | Some preReleasePrefix ->
             let applyPreReleaseIdentifier (version: SemVersion) =
                 version.WithPrereleaseParsedFrom(preReleasePrefix + ".1")
@@ -238,26 +242,19 @@ let compute
 
     // If the user forced a version, then use that version
     match changelog.Metadata.ForceVersion with
-    | Some version ->
-        version
-        |> makeBumpInfo
-        |> BumpRequired
+    | Some version -> version |> makeBumpInfo |> BumpRequired
 
     | None ->
         match computeVersion settings changelog commitsForRelease refVersion with
         | Some newVersion -> makeBumpInfo newVersion |> BumpRequired
         | None -> NoVersionBumpRequired changelog
 
-let apply
-    (remoteConfig: RemoteConfig)
-    (releaseContext: ReleaseContext)
-    : Result<unit, string>
-    =
+let apply (remoteConfig: RemoteConfig) (releaseContext: ReleaseContext) : Result<unit, string> =
     // Notify user about the status of each changelog in order
     match releaseContext with
     | NoVersionBumpRequired changelogInfo ->
         Log.info $"No version bump required for '{changelogInfo.File.FullName}'."
-        Ok ()
+        Ok()
 
     | BumpRequired bumpInfo ->
         Log.info $"Bumping '{bumpInfo.Changelog.File.FullName}' to {bumpInfo.NewVersion}."
@@ -302,12 +299,15 @@ let apply
                 |> Result.map (updateFileContent absolutePath)
 
             | ChangelogMetadata.Updater.Command command ->
-                Updater.Command.run bumpInfo.Changelog.File.DirectoryName command bumpInfo.NewVersion
+                Updater.Command.run
+                    bumpInfo.Changelog.File.DirectoryName
+                    command
+                    bumpInfo.NewVersion
 
         )
         // Unwrap the success case as returning unit or list of unit is equivalent
         |> function
-            | Ok _ -> Ok ()
+            | Ok _ -> Ok()
             | Error error ->
                 Error
                     $"Failed to apply updaters for changelog '{bumpInfo.Changelog.File.FullName}':\n\n%s{error}"

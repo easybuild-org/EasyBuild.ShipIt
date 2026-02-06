@@ -45,6 +45,11 @@ type SharedSettings() =
     [<DefaultValue(false)>]
     member val SkipPullRequest: bool = false with get, set
 
+    [<CommandOption("--pre-release [prefix]")>]
+    [<DefaultValue("beta")>]
+    [<Description("Indicate that the generated version is a pre-release version. Optionally, you can provide a prefix for the beta version. Default is 'beta'")>]
+    member val PreRelease: FlagValue<string> = FlagValue() with get, set
+
     member val Cwd = System.Environment.CurrentDirectory with get, set
 
     /// <summary>
