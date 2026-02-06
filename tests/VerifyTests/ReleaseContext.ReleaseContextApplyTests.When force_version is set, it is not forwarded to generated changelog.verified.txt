@@ -39,7 +39,4 @@ to be able to build your project when working on the first version.
 -->
 
 === Extra File ===
-Hello this is a random file that is used in tests.
-
-Last released version: 1.0.0
 

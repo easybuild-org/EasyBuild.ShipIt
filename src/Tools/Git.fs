@@ -261,6 +261,8 @@ let forcePush () =
         |> CmdLine.toString
     )
 
+let push () = Command.Run("git", "push")
+
 let switch (branchName: string) =
     Command.Run(
         "git",

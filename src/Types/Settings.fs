@@ -27,28 +27,29 @@ type SharedSettings() =
     member val RemoteRepo: string option = None with get, set
 
     [<CommandOption("--allow-branch <VALUES>")>]
-    [<Description("List of branches that are allowed to be used to generate the changelog. Default is 'main'")>]
+    [<Description("List of branches that are allowed to be used to generate the changelog")>]
+    [<DefaultValue([| "main" |])>]
     member val AllowBranch: string array = [| "main" |] with get, set
 
     [<CommandOption("--skip-invalid-commit")>]
     [<Description("Skip invalid commits instead of failing")>]
-    [<DefaultValue(true)>]
-    member val SkipInvalidCommit: bool = true with get, set
+    [<DefaultValue(false)>]
+    member val SkipInvalidCommit: bool = false with get, set
 
-    [<CommandOption("--skip-merge-commit")>]
+    [<CommandOption("--skip-merge-commit [BOOL]")>]
     [<Description("Skip merge commits when generating the changelog (commit messages starting with 'Merge ')")>]
     [<DefaultValue(true)>]
-    member val SkipMergeCommit: bool = true with get, set
+    member val SkipMergeCommit: FlagValue<bool> = FlagValue() with get, set
 
-    [<CommandOption("--skip-pull-request")>]
-    [<Description("Skip creating a pull request updating the changelogs")>]
-    [<DefaultValue(false)>]
-    member val SkipPullRequest: bool = false with get, set
-
-    [<CommandOption("--pre-release [prefix]")>]
+    [<CommandOption("--pre-release [PREFIX]")>]
     [<DefaultValue("beta")>]
     [<Description("Indicate that the generated version is a pre-release version. Optionally, you can provide a prefix for the beta version. Default is 'beta'")>]
     member val PreRelease: FlagValue<string> = FlagValue() with get, set
+
+    [<CommandOption("--mode <MODE>")>]
+    [<DefaultValue("pull-request")>]
+    [<Description("Mode of operation. Possible values are 'local', 'pull-request' and 'push'")>]
+    member val Mode: string option = None with get, set
 
     member val Cwd = System.Environment.CurrentDirectory with get, set
 

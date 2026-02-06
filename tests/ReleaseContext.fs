@@ -314,7 +314,7 @@ type ComputeTests() =
     [<Test>]
     member _.``If --skip-invalid-commit is true, skip invalid commit messages``() =
         let defaultGenerateSettings =
-            DefaultCommandSettings(GitRepositoryRoot = Workspace.``.``)
+            DefaultCommandSettings(SkipInvalidCommit = true, GitRepositoryRoot = Workspace.``.``)
 
         let changelogInfo =
             {
@@ -414,6 +414,77 @@ type ComputeTests() =
             |> BumpRequired
 
         Expect.equal actual expected
+
+    [<Test>]
+    member _.``If --skip-merge-commit is false, do not skip merge commits``() =
+        let settings =
+            DefaultCommandSettings(
+                SkipMergeCommit = FlagValue(Value = false, IsSet = true),
+                GitRepositoryRoot = Workspace.``.``
+            )
+
+        let changelogInfo =
+            {
+                File = FileInfo(Workspace.``valid_changelog.md``)
+                Content = STANDARD_CHANGELOG
+                Versions = [ SemVersion(0, 0, 0) ]
+                Metadata = ChangelogMetadata.Empty
+            }
+
+        let commits: Git.Commit list =
+            [
+                Git.Commit.Create("49c0699af98a67f1e8efcac8b1467b283a244aa8", "fix: fix a bug")
+                Git.Commit.Create(
+                    "43c60e4fc9585a9f235ab6a6dd97c4c1cf945e46",
+                    "Merge pull request #123 from feature/awesome-feature"
+                )
+            ]
+
+        try
+            ReleaseContext.compute settings changelogInfo commits CommitParserConfig.Default
+            |> ignore
+
+            failwith "Expected an exception to be thrown due to invalid commit message"
+        with
+
+        | :? FailedToParseCommit as ex ->
+            Expect.equal
+                ex.msg
+                """Failed to parse commit message:
+
+==============
+Commit
+==============
+
+Merge pull request #123 from feature/awesome-feature
+
+==============
+Error
+==============
+
+Invalid commit message format.
+
+Expected a commit message with the following format: '<type>[optional scope]: <description>'.
+
+Where <type> is one of the following:
+
+- feat: A new feature
+- fix: A bug fix
+- ci: Changes to CI/CD configuration
+- chore: Changes to the build process or auxiliary tools and libraries such as documentation generation
+- docs: Documentation changes
+- test: Adding missing tests or correcting existing tests
+- style: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
+- refactor: A code change that neither fixes a bug nor adds a feature
+- perf: A code change that improves performance
+- revert: Reverts a previous commit
+- build: Changes that affect the build system or external dependencies
+
+Example:
+-------------------------
+feat: some description
+-------------------------"""
+        | ex -> failwith $"Unexpected exception: {ex}"
 
     [<Test>]
     member _.``Allows to include files from a parent directory``() =
@@ -1439,5 +1510,5 @@ type ReleaseContextApplyTests() =
                     Workspace.``valid_changelog_with_forced_version.md``
                     // The file below is provided even if it is not updated by the changelog above
                     // This is just because the argument is required
-                    Workspace.files.``some_file.txt``
+                    Workspace.files.``empty.txt``
         }

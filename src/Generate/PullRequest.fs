@@ -36,9 +36,9 @@ type PullRequestContext
             let concatenatedInfo =
                 updatedItems
                 |> Seq.map (fun bumpInfo ->
-                    let changelogName = bumpInfo.Changelog.NameOrFilePath gitRepositoryRoot
+                    let projectName = bumpInfo.Changelog.NameOrDirectoryPath gitRepositoryRoot
 
-                    $"{changelogName}:{bumpInfo.NewVersion}"
+                    $"{projectName}:{bumpInfo.NewVersion}"
                 )
                 |> String.concat "|"
 
@@ -58,9 +58,12 @@ type PullRequestContext
 
     member _.Title =
         if updatedItems.Count = 1 then
-            $"chore: release {updatedItems[0].NewVersion}"
+            let project = updatedItems[0]
+            let name = project.Changelog.NameWithVersion project.NewVersion gitRepositoryRoot
+
+            $"chore: release %s{name}"
         else
-            "chore: batch release"
+            "chore: release multiple projects"
 
     member _.PullRequestSummaryTable =
         let rows =
@@ -68,19 +71,39 @@ type PullRequestContext
             |> List.map (fun item ->
                 match item with
                 | NoVersionBumpRequired changelogInfo ->
-                    let changelogName = changelogInfo.NameOrFilePath gitRepositoryRoot
+                    let changelogName = changelogInfo.NameOrDirectoryPath gitRepositoryRoot
 
                     $"| %s{changelogName} | ✅ | |"
                 | BumpRequired bumpInfo ->
-                    let changelogName = bumpInfo.Changelog.NameOrFilePath gitRepositoryRoot
+                    let changelogName = bumpInfo.Changelog.NameOrDirectoryPath gitRepositoryRoot
 
                     $"| %s{changelogName} | 🚀 | %s{bumpInfo.NewVersion.ToString()} |"
+            )
+
+        let hasUnnamedProject =
+            items
+            |> List.exists (
+                function
+                | NoVersionBumpRequired info
+                | BumpRequired {
+                                   Changelog = info
+                               } ->
+                    info.NameOrDirectoryPath gitRepositoryRoot = Literals.UNNAMED_CHANGELOG
             )
 
         [
             "| Project | Status | New Version |"
             "| --- | :---: | :---: |"
             yield! rows
+            ""
+            "**Legend:**"
+            "- ✅ No version bump required"
+            "- 🚀 New version"
+            if hasUnnamedProject then
+                "> [!TIP]"
+                "> 🤖 I was not able to find a meaningful name for all the projects"
+                ">"
+                "> You can help me by setting [`name`](https://github.com/easybuild-org/EasyBuild.ShipIt#name) in your `CHANGELOG.md` configuration"
         ]
         |> String.concat "\n"
 
@@ -109,7 +132,7 @@ type PullRequestContext
                     bumpInfo
 
             [
-                $"## %s{bumpInfo.Changelog.NameOrFilePath gitRepositoryRoot}"
+                $"## %s{bumpInfo.Changelog.NameOrDirectoryPath gitRepositoryRoot}"
                 ""
                 increaseHeaderRank newVersionContent
             ]

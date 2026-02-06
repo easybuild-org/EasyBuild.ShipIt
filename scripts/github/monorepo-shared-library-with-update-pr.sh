@@ -26,7 +26,6 @@ git commit -m "feat: add shared library code"
 # Setup Project A which depends on SharedLibrary
 cat > src/ProjectA/CHANGELOG.md<< EOF
 ---
-name: Project A
 include:
     - ../SharedLibrary/
 ---

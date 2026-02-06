@@ -23,6 +23,7 @@
         <Compile Include="Extensions/Task.fs" />
         <Compile Include="Extensions/String.fs" />
         <Compile Include="Extensions/CmdLine.fs" />
+        <Compile Include="Extensions/FlagValue.fs" />
         <Compile Include="Tools/Git.fs" />
         <Compile Include="Tools/Gh.fs" />
         <Compile Include="Types/Global.fs" />

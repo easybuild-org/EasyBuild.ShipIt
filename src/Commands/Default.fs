@@ -10,12 +10,31 @@ open EasyBuild.ShipIt.Types.Settings
 open EasyBuild.ShipIt.Commands.Version
 open EasyBuild.ShipIt.Orchestrators.Github
 
+let releaseUsingPush
+    (remoteConfig: RemoteConfig)
+    (releaseContexts: ReleaseContext list)
+    (settings: SharedSettings)
+    =
+
+    // Re-use the information from the PullRequestContext
+    let prContext =
+        PullRequest.PullRequestContext(releaseContexts, settings.GitRepositoryRoot, remoteConfig)
+
+    if prContext.ShouldCreate() |> not then
+        Ok()
+    else
+
+        Git.commitAll prContext.Title
+        Git.push ()
+        Ok()
+
 let execute (settings: SharedSettings) (orchestratorResolver: Orchestrator.IResolver) =
     let res =
         result {
             let! config = ConfigLoader.tryLoadConfig settings.Config
             // Apply automatic resolution of remote config if needed
             let! remoteConfig = Verify.resolveRemoteConfig settings
+            let! releaseMode = Verify.releaseMode settings.Mode
 
             // We need to verify that the repository is clean before doing anything
             do! Verify.dirty ()
@@ -53,13 +72,16 @@ let execute (settings: SharedSettings) (orchestratorResolver: Orchestrator.IReso
             if releaseContexts.Length = 0 then
                 Log.success "No changelog was bumped, nothing to ship."
             else
-                if not settings.SkipPullRequest then
+                match releaseMode with
+                | ReleaseMode.PullRequest ->
                     do!
                         PullRequest.createOrUpdatePullRequest
                             orchestratorResolver
                             remoteConfig
                             releaseContexts
                             settings
+                | ReleaseMode.Local -> ()
+                | ReleaseMode.Push -> do! releaseUsingPush remoteConfig releaseContexts settings
 
                 Log.success "Done 🚀"
 

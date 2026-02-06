@@ -15,6 +15,11 @@ module private Line =
 
     let isFrontMatterDelimiter (line: string) = line.Trim() = "---"
 
+module Literals =
+
+    [<Literal>]
+    let UNNAMED_CHANGELOG = "Unnamed"
+
 type ChangelogInfo =
     {
         File: FileInfo
@@ -23,10 +28,33 @@ type ChangelogInfo =
         Metadata: ChangelogMetadata
     }
 
-    member this.NameOrFilePath(rootDir: string) =
+    /// <summary>
+    /// Get a user-friendly name for the changelog, used for display purposes and to generate branch names.
+    /// </summary>
+    /// <param name="rootDir">The root directory of the git repository, used to compute a relative path if no name is provided in the metadata.</param>
+    /// <returns>
+    /// The name of the changelog if specified in the metadata, otherwise the relative path from the repository root to the changelog file.
+    /// </returns>
+    member this.NameOrDirectoryPath(rootDir: string) =
         match this.Metadata.Name with
         | Some name -> name
-        | None -> Path.GetRelativePath(rootDir, this.File.FullName)
+        | None ->
+            let resolvedDir =
+                Path.GetRelativePath(rootDir, this.File.FullName) |> Path.GetDirectoryName
+
+            if String.IsNullOrEmpty(resolvedDir) then
+                Literals.UNNAMED_CHANGELOG
+            else
+                resolvedDir.Replace(Path.DirectorySeparatorChar, '/')
+
+    member this.NameWithVersion (version: SemVersion) (rootDir: string) =
+        let baseName = this.NameOrDirectoryPath(rootDir)
+        let versionText = version.ToString()
+
+        if baseName = Literals.UNNAMED_CHANGELOG then
+            versionText
+        else
+            $"%s{baseName}@%s{versionText}"
 
     member this.LastVersion =
         match List.tryHead this.Versions with

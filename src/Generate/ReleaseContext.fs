@@ -8,6 +8,7 @@ open EasyBuild.ShipIt.Generate.Types
 open Microsoft.Extensions.FileSystemGlobbing
 open System.IO
 open FsToolkit.ErrorHandling
+open Spectre.Console.Cli
 
 let getCommits (changelog: ChangelogInfo) =
     let commitFilter =
@@ -162,29 +163,39 @@ let compute
                         SemanticCommit = semanticCommit
                     }
             | Error error ->
-                if settings.SkipInvalidCommit then
-                    Log.warning $"Failed to parse commit message: {error}"
-                    None
-                else if settings.SkipMergeCommit && commit.RawBody.StartsWith("Merge ") then
-                    // Skip merge commits
-                    None
-                else
+                let skipMergeCommit = FlagValue.orTrue settings.SkipMergeCommit
+
+                let reportError () =
                     let error =
                         $"Failed to parse commit message:
 
 ==============
-    Commit
+Commit
 ==============
 
-%s{commit.RawBody}
+%s{commit.RawBody.TrimEnd()}
 
 ==============
-    Error
+Error
 ==============
 
 %s{error}"
 
-                    failwith error
+                    raise (FailedToParseCommit error)
+
+                match settings.SkipInvalidCommit, skipMergeCommit with
+                | true, _ ->
+                    Log.warning $"Failed to parse commit message: {error}"
+                    None
+                | false, true ->
+                    // If the commit is a merge commit, we skip it without failing even if --skip-invalid-commit is false
+                    // This is because merge commits are often not following the conventional commit format and we don't want to fail the whole process because of that
+                    if commit.RawBody.StartsWith("Merge ") then
+                        Log.warning $"Skipping merge commit: {commit.RawBody}"
+                        None
+                    else
+                        reportError ()
+                | false, false -> reportError ()
         )
         // Only include commits that have the type feat, fix or is marked as a breaking change
         |> List.filter (fun commit ->

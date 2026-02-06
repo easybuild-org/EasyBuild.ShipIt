@@ -50,3 +50,13 @@ let resolveRemoteConfig (settings: Settings.SharedSettings) =
     | _ ->
         Error
             """When using --remote-hostname, --remote-owner and --remote-repo they must be all provided."""
+
+let releaseMode (mode: string option) =
+    match mode with
+    | None -> Ok ReleaseMode.PullRequest
+    | Some "local" -> Ok ReleaseMode.Local
+    | Some "pull-request" -> Ok ReleaseMode.PullRequest
+    | Some "push" -> Ok ReleaseMode.Push
+    | _ ->
+        Error
+            "Invalid mode passed to `--mode`. Allowed values are 'local', 'pull-request' and 'push'."

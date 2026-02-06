@@ -3,6 +3,8 @@ namespace EasyBuild.ShipIt.Types
 open Thoth.Yaml
 open Semver
 
+exception FailedToParseCommit of msg: string
+
 [<RequireQualifiedAccess>]
 type RemoteHost =
     | GitHub
@@ -39,6 +41,16 @@ type RemoteConfig =
         | "github.com" -> RemoteHost.GitHub
         // | "gitlab.com" -> Host.GitLab
         | _ -> RemoteHost.Unknown
+
+[<RequireQualifiedAccess>]
+type ReleaseMode =
+    // Local mode means that we only generate the changelog locally
+    | Local
+    // PR mode means that we generate the changelog and create a pull request with the changes
+    | PullRequest
+    // Push mode means that we generate the changelog, commit the changes and push
+    // them to the remote repository.
+    | Push
 
 [<RequireQualifiedAccess>]
 module ChangelogMetadata =
