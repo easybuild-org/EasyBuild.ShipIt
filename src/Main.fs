@@ -37,6 +37,13 @@ Learn more at https://github.com/easybuild-org/EasyBuild.ShipIt"
             config.SetHelpProvider(CustomHelperProvider(config.Settings)) |> ignore
             config.AddCommand<VersionCommand>("version") |> ignore
 
+            config.SetExceptionHandler(fun ex _ ->
+                Log.error "An error occured, please review the logs above and details below."
+                Log.exn ex
+                1
+            )
+            |> ignore
+
             config.AddCommand<GithubCommand>("github").WithDescription("Publish to GitHub")
             |> ignore
         )

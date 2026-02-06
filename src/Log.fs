@@ -21,3 +21,5 @@ let error msg =
 
 let warning msg =
     output.MarkupLine("[yellow]{0}[/]", Markup.Escape(msg))
+
+let exn (ex: exn) = output.WriteException(ex)
