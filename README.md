@@ -23,6 +23,7 @@ Then, if the `--skip-pull-request` option is not passed, it will create a pull r
 Learn more about:
 
 - [How is the version calculated?](#how-is-the-version-calculated)
+- [Commit conventions](#commit-conventions)
 - [CLI options](#cli-options)
 - [Configuration](#configuration)
 - [Monorepo support](#monorepo-support)
@@ -54,7 +55,6 @@ USAGE:
 OPTIONS:
                                         DEFAULT
     -h, --help                                          Prints help information
-    -c, --config                                        Path to the configuration file
         --allow-branch <VALUES>         main            List of branches that are allowed to be used to generate the changelog
         --mode <MODE>                   pull-request    Mode of operation. Possible values are 'local', 'pull-request' and 'push'
         --pre-release [PREFIX]          beta            Indicate that the generated version is a pre-release version. Optionally, you can provide a prefix for the beta version. Default is 'beta'
@@ -67,7 +67,8 @@ OPTIONS:
 
 COMMANDS:
     version
-    github     Publish to GitHub
+    conventions    List supported Conventional Commit types
+    github         Publish to GitHub
 ```
 
 ## How is the version calculated?
@@ -187,6 +188,54 @@ Then the next version will be released using the base version of the previous pr
 ### Overriding the computed version
 
 If the computed version is not what you want, you can use [`force_version`](#force_version) configuration to override the computed version for a specific release.
+
+## Commit conventions
+
+EasyBuild.Shipit follows the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification.
+
+```text
+<type>[optional scope][optional !]: <description>
+
+[optional body]
+
+[optional footer]
+```
+
+- `[optional body]` is a free-form text.
+
+    ```text
+    This is a single line body.
+    ```
+
+    ```text
+    This is a
+
+    multi-line body.
+    ```
+
+- `[optional footer]` is inspired by [git trailer format](https://git-scm.com/docs/git-interpret-trailers) `key: value` but also allows `key #value`
+
+    ```text
+    BREAKING CHANGE: <description>
+    Signed-off-by: Alice <alice@example.com>
+    Signed-off-by: Bob <bob@example.com>
+    Refs #123
+    Tag: cli
+    ```
+
+The following commit types are supported:
+
+- **feat** : A new feature
+- **fix** : A bug fix
+- **ci** : Changes to CI/CD configuration
+- **chore** : Changes to the build process or auxiliary tools and libraries such as documentation generation
+- **docs** : Documentation changes
+- **test** : Adding missing tests or correcting existing tests
+- **style** : Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
+- **refactor** : A code change that neither fixes a bug nor adds a feature
+- **perf** : A code change that improves performance
+- **revert** : Reverts a previous commit
+- **build** : Changes that affect the build system or external dependencies
 
 ## CLI options
 

@@ -6,6 +6,9 @@ open System.ComponentModel
 type VersionSettings() =
     inherit CommandSettings()
 
+type ConventionsSettings() =
+    inherit CommandSettings()
+
 type SharedSettings() =
 
     inherit CommandSettings()

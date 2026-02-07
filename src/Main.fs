@@ -4,6 +4,7 @@ open Spectre.Console.Cli
 open EasyBuild.ShipIt.Commands.Version
 open EasyBuild.ShipIt.Commands.Default
 open EasyBuild.ShipIt.Commands.Github
+open EasyBuild.ShipIt.Commands.Conventions
 
 let mutable private helpWasCalled = false
 
@@ -42,6 +43,11 @@ Learn more at https://github.com/easybuild-org/EasyBuild.ShipIt"
                 Log.exn ex
                 1
             )
+            |> ignore
+
+            config
+                .AddCommand<ConventionsCommand>("conventions")
+                .WithDescription("List supported Conventional Commit types")
             |> ignore
 
             config.AddCommand<GithubCommand>("github").WithDescription("Publish to GitHub")

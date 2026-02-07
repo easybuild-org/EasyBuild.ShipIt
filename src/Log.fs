@@ -2,7 +2,7 @@ module Log
 
 open Spectre.Console
 
-let private output =
+let output =
     let settings = new AnsiConsoleSettings()
     settings.Out <- AnsiConsoleOutput(System.Console.Error)
 
