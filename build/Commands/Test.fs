@@ -22,9 +22,10 @@ type TestCommand() =
                 CmdLine.empty
                 |> CmdLine.appendRaw "watch"
                 |> CmdLine.appendRaw "test"
-                |> CmdLine.appendPrefix
-                    "--project"
-                    Workspace.tests.``EasyBuild.ShipIt.Tests.fsproj``
+                // Can't use the type provider here because of:
+                // The type provider 'EasyBuild.FileSystemProvider.FileSystemProviders+RelativeFileSystemProvider' reported an error: Capacity exceeds maximum capacity. (Parameter 'capacity')
+                // ¯\_(ツ)_/¯
+                |> CmdLine.appendPrefix "--project" "tests/EasyBuild.ShipIt.Tests.fsproj"
                 |> CmdLine.toString
             )
         else
