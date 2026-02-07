@@ -17,22 +17,25 @@ type GitTests() =
 
     [<Test>]
     member _.``readCommits works``() =
-        let actual = Git.readCommit "5e74c5f6ccd3ef71bbfc58bae943333460ad13ee"
+        let actual = Git.readCommit "453db51d8c72c977cc4dcf5decf4cf03d6b1f28c"
 
         let expected: Git.Commit =
             {
-                Hash = "5e74c5f6ccd3ef71bbfc58bae943333460ad13ee"
-                AbbrevHash = "5e74c5f"
-                Author = "Maxime Mangel"
-                ShortMessage =
-                    "chore: Move test to Fable.Pyxpecto to prepare for Fable support in the future + and more low level Api"
+                Hash = "453db51d8c72c977cc4dcf5decf4cf03d6b1f28c"
+                AbbrevHash = "453db51"
+                Author = "Mangel Maxime"
+                ShortMessage = "chore: update .NET tools"
                 RawBody =
-                    "chore: Move test to Fable.Pyxpecto to prepare for Fable support in the future + and more low level Api
+                    "chore: update .NET tools
 "
                 Files =
                     [
-                        "src/Parser.fs"
-                        "tests/Changelog.fs"
+                        ".config/dotnet-tools.json"
+                        "src/Generate/ReleaseContext.fs"
+                        "src/Generate/Updater.fs"
+                        "src/Tools/Git.fs"
+                        "tests/Thoth.Yaml.Decode.fs"
+                        "tests/fixtures/files/update_version.fsx"
                     ]
             }
 
