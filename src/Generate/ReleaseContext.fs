@@ -163,7 +163,8 @@ let compute
                         SemanticCommit = semanticCommit
                     }
             | Error error ->
-                let skipMergeCommit = FlagValue.orTrue settings.SkipMergeCommit
+                let skipMergeCommit = FlagValue.orFalse settings.SkipMergeCommit
+                let skipInvalidCommit = FlagValue.orFalse settings.SkipInvalidCommit
 
                 let reportError () =
                     let error =
@@ -183,7 +184,7 @@ Error
 
                     raise (FailedToParseCommit error)
 
-                match settings.SkipInvalidCommit, skipMergeCommit with
+                match skipInvalidCommit, skipMergeCommit with
                 | true, _ ->
                     Log.warning $"Failed to parse commit message: {error}"
                     None

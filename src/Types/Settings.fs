@@ -14,6 +14,21 @@ type SharedSettings() =
     [<Description("Path to the configuration file")>]
     member val Config: string option = None with get, set
 
+    [<CommandOption("--allow-branch <VALUES>")>]
+    [<Description("List of branches that are allowed to be used to generate the changelog")>]
+    [<DefaultValue([| "main" |])>]
+    member val AllowBranch: string array = [| "main" |] with get, set
+
+    [<CommandOption("--mode <MODE>")>]
+    [<DefaultValue("pull-request")>]
+    [<Description("Mode of operation. Possible values are 'local', 'pull-request' and 'push'")>]
+    member val Mode: string option = None with get, set
+
+    [<CommandOption("--pre-release [PREFIX]")>]
+    [<DefaultValue("beta")>]
+    [<Description("Indicate that the generated version is a pre-release version. Optionally, you can provide a prefix for the beta version. Default is 'beta'")>]
+    member val PreRelease: FlagValue<string> = FlagValue() with get, set
+
     [<CommandOption("--remote-hostname <HOSTNAME>")>]
     [<Description("Git remote hostname, e.g. github.com, gitlab.com")>]
     member val RemoteHostname: string option = None with get, set
@@ -26,30 +41,15 @@ type SharedSettings() =
     [<Description("Git remote repository name")>]
     member val RemoteRepo: string option = None with get, set
 
-    [<CommandOption("--allow-branch <VALUES>")>]
-    [<Description("List of branches that are allowed to be used to generate the changelog")>]
-    [<DefaultValue([| "main" |])>]
-    member val AllowBranch: string array = [| "main" |] with get, set
-
     [<CommandOption("--skip-invalid-commit")>]
     [<Description("Skip invalid commits instead of failing")>]
     [<DefaultValue(false)>]
-    member val SkipInvalidCommit: bool = false with get, set
+    member val SkipInvalidCommit: FlagValue<bool> = FlagValue() with get, set
 
-    [<CommandOption("--skip-merge-commit [BOOL]")>]
+    [<CommandOption("--skip-merge-commit")>]
     [<Description("Skip merge commits when generating the changelog (commit messages starting with 'Merge ')")>]
-    [<DefaultValue(true)>]
+    [<DefaultValue(false)>]
     member val SkipMergeCommit: FlagValue<bool> = FlagValue() with get, set
-
-    [<CommandOption("--pre-release [PREFIX]")>]
-    [<DefaultValue("beta")>]
-    [<Description("Indicate that the generated version is a pre-release version. Optionally, you can provide a prefix for the beta version. Default is 'beta'")>]
-    member val PreRelease: FlagValue<string> = FlagValue() with get, set
-
-    [<CommandOption("--mode <MODE>")>]
-    [<DefaultValue("pull-request")>]
-    [<Description("Mode of operation. Possible values are 'local', 'pull-request' and 'push'")>]
-    member val Mode: string option = None with get, set
 
     member val Cwd = System.Environment.CurrentDirectory with get, set
 

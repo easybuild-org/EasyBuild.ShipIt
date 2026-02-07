@@ -23,6 +23,7 @@ Then, if the `--skip-pull-request` option is not passed, it will create a pull r
 Learn more about:
 
 - [How is the version calculated?](#how-is-the-version-calculated)
+- [CLI options](#cli-options)
 - [Configuration](#configuration)
 - [Monorepo support](#monorepo-support)
 
@@ -52,22 +53,17 @@ USAGE:
 
 OPTIONS:
                                         DEFAULT
-    -h, --help                                     Prints help information
-    -c, --config                                   Path to the configuration file
-        --remote-hostname <HOSTNAME>               Git remote hostname, e.g. github.com, gitlab.com
-        --remote-owner <OWNER>                     Git remote owner or organization name
-        --remote-repo <REPO>                       Git remote repository name
-        --allow-branch <VALUES>                    List of branches that are allowed to be used to generate the changelog.
-                                                   Default is 'main'
-        --skip-invalid-commit           True       Skip invalid commits instead of failing
-        --skip-merge-commit             True       Skip merge commits when generating the changelog (commit messages
-                                                   starting with 'Merge ')
-        --pre-release [PREFIX]          beta       Indicate that the generated version is a pre-release version. Optionally,
-                                                   you can provide a prefix for the beta version. Default is 'beta'
-        --force-version <VERSION>                  Force the version to be used in the changelog
-        --skip-pull-request                        Skip creating a pull request updating the changelogs
-        --pre-release [PREFIX]          beta       Indicate that the generated version is a pre-release version. Optionally, you can provide a prefix for the beta version. Default is 'beta'
-    -v, --version                                  Show version information
+    -h, --help                                          Prints help information
+    -c, --config                                        Path to the configuration file
+        --allow-branch <VALUES>         main            List of branches that are allowed to be used to generate the changelog
+        --mode <MODE>                   pull-request    Mode of operation. Possible values are 'local', 'pull-request' and 'push'
+        --pre-release [PREFIX]          beta            Indicate that the generated version is a pre-release version. Optionally, you can provide a prefix for the beta version. Default is 'beta'
+        --remote-hostname <HOSTNAME>                    Git remote hostname, e.g. github.com, gitlab.com
+        --remote-owner <OWNER>                          Git remote owner or organization name
+        --remote-repo <REPO>                            Git remote repository name
+        --skip-invalid-commit           False           Skip invalid commits instead of failing
+        --skip-merge-commit             False           Skip merge commits when generating the changelog (commit messages starting with 'Merge ')
+    -v, --version                                       Show version information
 
 COMMANDS:
     version
@@ -191,6 +187,58 @@ Then the next version will be released using the base version of the previous pr
 ### Overriding the computed version
 
 If the computed version is not what you want, you can use [`force_version`](#force_version) configuration to override the computed version for a specific release.
+
+## CLI options
+
+### `--remote-hostname`, `--remote-owner`, `--remote-repo`
+
+These options allow you to specify the Git remote information. This is useful when the tool is not able to automatically detect the Git provider based on the git remote URL.
+
+This information is used to create links to commits, diff, etc. in the generated changelog file.
+
+### `--allow-branch`
+
+**type:** string[]
+**default:** `main`
+
+Restrict the branches that can be used to generate the changelog.
+
+This is a safety measure to avoid generating changelog from a branch that is not intended to be released, e.g. a feature branch.
+
+### `--skip-invalid-commit`
+
+**type:** bool
+**default:** false
+
+When this option is passed, the tool will skip any commit that is not following the Conventional Commits format instead of failing.
+
+### `--skip-merge-commit`
+
+**type:** bool
+**default:** false
+
+When this option is passed, the tool will skip any merge commit (commit messages starting with 'Merge ') when generating the changelog.
+
+### `--pre-release`
+
+**type:** string
+
+When this option is passed, the generated version will be a pre-release version.
+
+Optionsally, you can provide a prefix for the pre-release version. If no prefix is provided, it will default to `beta`.
+
+### `--mode`
+
+**type:** string
+**default:** `pull-request`
+
+Control the mode in which the tool operates.
+
+- `local`: Only generate the changelog file locally
+- `pull-request`: Create a pull request with the updated changelog file (default)
+- `push`: Push the updated changelog file directly to the current branch
+
+    **🚨 IMPORTANT:** Make sure to configure `--allow-branch` option to avoid pushing changes to unintended branches.
 
 ## Configuration
 
