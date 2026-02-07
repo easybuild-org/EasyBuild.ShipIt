@@ -43,12 +43,12 @@ type GitTests() =
 
     [<Test>]
     member _.``readCommit works for commits with quotes in the message``() =
-        let actual = Git.readCommit "78a6bc460a13d6edcad43e93f4ad06d301358912"
+        let actual = Git.readCommit "16467286715fa98849f59f15c07d980816830e09"
 
         let expected: Git.Commit =
             {
-                Hash = "78a6bc460a13d6edcad43e93f4ad06d301358912"
-                AbbrevHash = "78a6bc4"
+                Hash = "16467286715fa98849f59f15c07d980816830e09"
+                AbbrevHash = "1646728"
                 Author = "Mangel Maxime"
                 ShortMessage = "test: this is a commit with some \"quotes\" in the message"
                 RawBody =
