@@ -20,7 +20,10 @@ type ErrorsTests() =
     member _.``invalid yaml``() =
         let yaml = "this: is: invalid: yaml"
         let result = Decode.fromString Decode.string yaml
-        let expected = Error "Given an invalid YAML: While scanning a plain scalar value, found invalid mapping."
+
+        let expected =
+            Error
+                "Given an invalid YAML: While scanning a plain scalar value, found invalid mapping."
 
         Expect.equal result expected
 

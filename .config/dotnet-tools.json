@@ -3,21 +3,21 @@
   "isRoot": true,
   "tools": {
     "fantomas": {
-      "version": "6.3.4",
+      "version": "7.0.5",
       "commands": [
         "fantomas"
       ],
       "rollForward": false
     },
     "husky": {
-      "version": "0.6.4",
+      "version": "0.8.0",
       "commands": [
         "husky"
       ],
       "rollForward": false
     },
     "easybuild.commitlinter": {
-      "version": "1.0.0",
+      "version": "2.0.0",
       "commands": [
         "commit-linter"
       ],

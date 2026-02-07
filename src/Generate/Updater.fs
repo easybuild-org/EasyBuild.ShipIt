@@ -183,7 +183,8 @@ module Command =
             Command.Run(programName, args, workingDirectory = cwd)
             Ok()
         with ex ->
-            Error $"""Error when running command.
+            Error
+                $"""Error when running command.
 
 Command: {command}
 Error: {ex.Message}"""

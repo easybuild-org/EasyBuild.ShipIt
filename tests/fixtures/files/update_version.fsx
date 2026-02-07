@@ -13,7 +13,9 @@ let version =
 
 match version with
 | None ->
-    failwith "Could not find --version argument. Please provide the new version as an argument, e.g. --version 1.2.3"
+    failwith
+        "Could not find --version argument. Please provide the new version as an argument, e.g. --version 1.2.3"
+
     1
 | Some version ->
     let cwd = Directory.GetCurrentDirectory()

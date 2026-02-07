@@ -88,10 +88,7 @@ let computeVersion
                 .WithoutPrereleaseOrMetadata()
 
         let bumpMinor () =
-            refVersion
-                .WithMinor(refVersion.Minor + 1I)
-                .WithPatch(0)
-                .WithoutPrereleaseOrMetadata()
+            refVersion.WithMinor(refVersion.Minor + 1I).WithPatch(0).WithoutPrereleaseOrMetadata()
 
         let bumpPatch () =
             refVersion.WithPatch(refVersion.Patch + 1I).WithoutPrereleaseOrMetadata()

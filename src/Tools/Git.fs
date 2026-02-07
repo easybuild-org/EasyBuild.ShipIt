@@ -110,9 +110,7 @@ Context:
         if commitStdout[1].Trim().Length = 0 then
             []
         else
-            commitStdout[1]
-                .Replace("\r", "")
-                .Split('\n', StringSplitOptions.RemoveEmptyEntries)
+            commitStdout[1].Replace("\r", "").Split('\n', StringSplitOptions.RemoveEmptyEntries)
             |> Array.toList
 
     if metadatas.Length <> 6 then
