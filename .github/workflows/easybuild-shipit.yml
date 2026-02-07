@@ -1,0 +1,28 @@
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+name: EasyBuild ShipIt
+
+jobs:
+  # Run tests and generate a Pull Request to prepare a release
+  shipit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+      - name: Build and test
+        run: ./build.sh test
+      - name: ShipIt (Pull Request)
+        run: dotnet run --project src/ -c SHIPIT_EXCEPTION
