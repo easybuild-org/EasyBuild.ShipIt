@@ -10,10 +10,6 @@ type SharedSettings() =
 
     inherit CommandSettings()
 
-    [<CommandOption("-c|--config")>]
-    [<Description("Path to the configuration file")>]
-    member val Config: string option = None with get, set
-
     [<CommandOption("--allow-branch <VALUES>")>]
     [<Description("List of branches that are allowed to be used to generate the changelog")>]
     [<DefaultValue([| "main" |])>]

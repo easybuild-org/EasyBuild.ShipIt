@@ -31,7 +31,8 @@ let releaseUsingPush
 let execute (settings: SharedSettings) (orchestratorResolver: Orchestrator.IResolver) =
     let res =
         result {
-            let! config = ConfigLoader.tryLoadConfig settings.Config
+            // Use the default config coming from EasyBuild.CommitParser
+            let config = ConfigLoader.Config.Default
             // Apply automatic resolution of remote config if needed
             let! remoteConfig = Verify.resolveRemoteConfig settings
             let! releaseMode = Verify.releaseMode settings.Mode
