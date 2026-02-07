@@ -339,10 +339,11 @@ let updateWithNewVersion (githubRemote: RemoteConfig) (bumpInfo: BumpInfo) =
             changelogInfo.Description.Trim()
             ""
             // New version
-            newVersionLines
-
+            newVersionLines.Trim()
+            ""
             // Add the rest of the changelog
-            changelogInfo.VersionsText
+            changelogInfo.VersionsText.Trim()
+            ""
         ]
         |> removeConsecutiveEmptyLines false []
         |> String.concat "\n"
