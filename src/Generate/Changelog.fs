@@ -46,6 +46,10 @@ let findVersions (content: string) =
 let find (settings: Settings.SharedSettings) =
     let matcher = Matcher()
     matcher.AddInclude("**/CHANGELOG.md") |> ignore
+#if SHIPIT_EXCEPTION
+    // When releasing EasyBuild.ShipIt, we need to ignore CHANGELOG.md files used in the tests
+    matcher.AddExclude("**/tests/**/CHANGELOG.md") |> ignore
+#endif
 
     let directoryInfo = DirectoryInfo(settings.Cwd)
     let dirWrapper = DirectoryInfoWrapper(directoryInfo)
