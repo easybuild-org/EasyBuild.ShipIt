@@ -43,26 +43,18 @@ type GitTests() =
 
     [<Test>]
     member _.``readCommit works for commits with quotes in the message``() =
-        let actual = Git.readCommit "0cfd2cbead888deff33a7ee839416992ebe9fecb"
+        let actual = Git.readCommit "78a6bc460a13d6edcad43e93f4ad06d301358912"
 
         let expected: Git.Commit =
             {
-                Hash = "0cfd2cbead888deff33a7ee839416992ebe9fecb"
-                AbbrevHash = "0cfd2cb"
-                Author = "Maxime Mangel"
-                ShortMessage =
-                    "feat: add `--skip-merge-commit` allowing to skip commit starting with \"Merge \""
+                Hash = "78a6bc460a13d6edcad43e93f4ad06d301358912"
+                AbbrevHash = "78a6bc4"
+                Author = "Mangel Maxime"
+                ShortMessage = "test: this is a commit with some \"quotes\" in the message"
                 RawBody =
-                    """feat: add `--skip-merge-commit` allowing to skip commit starting with "Merge "
-"""
-                Files =
-                    [
-                        "README.md"
-                        "src/Generate/ReleaseContext.fs"
-                        "src/Generate/Types.fs"
-                        "tests/ReleaseContext.fs"
-                        "tests/Utils.fs"
-                    ]
+                    "test: this is a commit with some \"quotes\" in the message
+"
+                Files = [ "tests/Git.fs" ]
             }
 
         Expect.equal actual expected
