@@ -26,9 +26,9 @@ jobs:
           global-json-file: global.json
       - name: Build and test
         run: ./build.sh test
-      - name: Git logs
-        run: |
-          git rev-parse --abbrev-ref --symbolic-full-name @{upstream}
-          git remote -vv
+      # - name: Git logs
+      #   run: |
+      #     git rev-parse --abbrev-ref --symbolic-full-name @{upstream}
+      #     git remote -vv
       - name: ShipIt (Pull Request)
         run: dotnet run --project src/ -c SHIPIT_EXCEPTION
