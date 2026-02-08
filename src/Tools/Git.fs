@@ -144,8 +144,6 @@ let getCommits (filter: GetCommitsFilter) =
         // perhaps to support other CI providers when adding support for them in the PullRequest orchestrator.
         match Environment.tryGet "GITHUB_EVENT_NAME" with
         | Some eventName ->
-            printfn "Detected Github Actions event: %s" eventName
-
             match eventName with
             | "pull_request" -> "HEAD~1"
             | _ -> "HEAD"
@@ -382,3 +380,33 @@ let getRemoteName () =
                 """Could not determine the name of the remote for the current branch.
 
 Please open an issue we the result of running `git rev-parse --abbrev-ref --symbolic-full-name @{upstream}`"""
+
+let dropLastCommit () =
+    Command.Run(
+        "git",
+        CmdLine.empty
+        |> CmdLine.appendRaw "reset"
+        |> CmdLine.appendRaw "--hard"
+        |> CmdLine.appendRaw "HEAD~1"
+        |> CmdLine.toString
+    )
+
+let createEasyBuildStash () =
+    Command.Run(
+        "git",
+        CmdLine.empty
+        |> CmdLine.appendRaw "stash"
+        |> CmdLine.appendRaw "push"
+        |> CmdLine.appendPrefix "-m" "EasyBuild.ShipIt_stash"
+        |> CmdLine.toString
+    )
+
+let applyEasyBuildStash () =
+    Command.Run(
+        "git",
+        CmdLine.empty
+        |> CmdLine.appendRaw "stash"
+        |> CmdLine.appendRaw "apply"
+        |> CmdLine.appendRaw "EasyBuild.ShipIt_stash"
+        |> CmdLine.toString
+    )

@@ -165,6 +165,18 @@ let createOrUpdatePullRequest
             // 3. Restore the previous branch and delete the temporary branch
 
             Git.switchAndMove prContext.BranchName
+
+            if Environment.isGithubActions () then
+                match Environment.tryGet "GITHUB_EVENT_NAME" with
+                | Some eventName ->
+                    match eventName with
+                    | "pull_request" ->
+                        Git.createEasyBuildStash ()
+                        Git.dropLastCommit ()
+                        Git.applyEasyBuildStash ()
+                    | _ -> ()
+                | None -> ()
+
             Git.commitAll prContext.Title
             let! remoteName = Git.getRemoteName ()
             Git.setUpstreamAndForcePush remoteName prContext.BranchName
