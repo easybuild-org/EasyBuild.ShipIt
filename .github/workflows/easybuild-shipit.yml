@@ -26,5 +26,7 @@ jobs:
           global-json-file: global.json
       - name: Build and test
         run: ./build.sh test
+      - name: Git logs
+        run: git --no-pager log --oneline
       - name: ShipIt (Pull Request)
         run: dotnet run --project src/ -c SHIPIT_EXCEPTION
