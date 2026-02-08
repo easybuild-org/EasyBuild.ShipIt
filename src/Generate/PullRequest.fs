@@ -168,8 +168,12 @@ let createOrUpdatePullRequest
             Git.commitAll prContext.Title
             let! remoteName = Git.getRemoteName ()
             Git.setUpstreamAndForcePush remoteName prContext.BranchName
-            Git.switch currentBranch
-            Git.deleteBranch prContext.BranchName
+
+            // If we were in a real branch before, we can switch back to it and delete the temporary branch
+            // Detached HEAD happens on Github Actions
+            if currentBranch <> "HEAD" then
+                Git.switch currentBranch
+                Git.deleteBranch prContext.BranchName
 
             let prBody =
                 [
