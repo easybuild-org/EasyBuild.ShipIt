@@ -4,7 +4,7 @@ module Environment
 open System
 
 let tryGet (name: string) =
-    let var = Environment.GetEnvironmentVariable("CI")
+    let var = Environment.GetEnvironmentVariable(name)
 
     if String.IsNullOrEmpty var then
         None
