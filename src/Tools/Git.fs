@@ -297,3 +297,30 @@ let commitAll (message: string) =
         |> CmdLine.appendPrefix "-m" message
         |> CmdLine.toString
     )
+
+let tryGetConfig (key: string) =
+    try
+        let struct (stdout, _) =
+            Command.ReadAsync(
+                "git",
+                CmdLine.empty
+                |> CmdLine.appendRaw "config"
+                |> CmdLine.appendPrefix "--get" key
+                |> CmdLine.toString
+            )
+            |> Async.AwaitTask
+            |> Async.RunSynchronously
+
+        Some(stdout.Trim())
+    with _ ->
+        None
+
+let setLocalConfig (key: string) (value: string) =
+    Command.Run(
+        "git",
+        CmdLine.empty
+        |> CmdLine.appendRaw "config"
+        |> CmdLine.appendRaw "--local"
+        |> CmdLine.appendPrefix key value
+        |> CmdLine.toString
+    )

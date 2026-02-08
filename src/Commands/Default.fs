@@ -10,7 +10,7 @@ open EasyBuild.ShipIt.Types.Settings
 open EasyBuild.ShipIt.Commands.Version
 open EasyBuild.ShipIt.Orchestrators.Github
 
-let releaseUsingPush
+let private releaseUsingPush
     (remoteConfig: RemoteConfig)
     (releaseContexts: ReleaseContext list)
     (settings: SharedSettings)
@@ -28,6 +28,20 @@ let releaseUsingPush
         Git.push ()
         Ok()
 
+/// <summary>
+/// When running from CI, we need to configure user.name and user.email to be able to commit and push the changes to the repository.
+/// </summary>
+/// <param name="mode"></param>
+/// <returns></returns>
+let private ensureGitRequirements (mode: ReleaseMode) =
+    match mode with
+    | ReleaseMode.Local -> ()
+    | ReleaseMode.PullRequest
+    | ReleaseMode.Push ->
+        if Environment.isCI () then
+            Git.setLocalConfig "user.name" "🤖 easybuild-shipit"
+            Git.setLocalConfig "user.email" "github-actions[bot]@users.noreply.github.com"
+
 let execute (settings: SharedSettings) (orchestratorResolver: Orchestrator.IResolver) =
     let res =
         result {
@@ -36,6 +50,8 @@ let execute (settings: SharedSettings) (orchestratorResolver: Orchestrator.IReso
             // Apply automatic resolution of remote config if needed
             let! remoteConfig = Verify.resolveRemoteConfig settings
             let! releaseMode = Verify.releaseMode settings.Mode
+
+            ensureGitRequirements releaseMode
 
             // We need to verify that the repository is clean before doing anything
             do! Verify.dirty ()
