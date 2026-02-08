@@ -352,27 +352,31 @@ let setLocalConfig (key: string) (value: string) =
     )
 
 let getRemoteName () =
-    try
-        let struct (remoteStdout, _) =
-            Command.ReadAsync(
-                "git",
-                CmdLine.empty
-                |> CmdLine.appendRaw "rev-parse"
-                |> CmdLine.appendRaw "--abbrev-ref"
-                |> CmdLine.appendRaw "--symbolic-full-name"
-                |> CmdLine.appendRaw "@{upstream}"
-                |> CmdLine.toString
-            )
-            |> Async.AwaitTask
-            |> Async.RunSynchronously
+    if Environment.isGithubActions () then
+        // On Github Actions the remote is always "origin"
+        Ok "origin"
+    else
+        try
+            let struct (remoteStdout, _) =
+                Command.ReadAsync(
+                    "git",
+                    CmdLine.empty
+                    |> CmdLine.appendRaw "rev-parse"
+                    |> CmdLine.appendRaw "--abbrev-ref"
+                    |> CmdLine.appendRaw "--symbolic-full-name"
+                    |> CmdLine.appendRaw "@{upstream}"
+                    |> CmdLine.toString
+                )
+                |> Async.AwaitTask
+                |> Async.RunSynchronously
 
-        let remoteRef = remoteStdout.Trim()
+            let remoteRef = remoteStdout.Trim()
 
-        remoteRef.Split('/') |> Array.head |> Ok
-    with
+            remoteRef.Split('/') |> Array.head |> Ok
+        with
 
-    | _ ->
-        Error
-            """Could not determine the name of the remote for the current branch.
+        | _ ->
+            Error
+                """Could not determine the name of the remote for the current branch.
 
 Please open an issue we the result of running `git rev-parse --abbrev-ref --symbolic-full-name @{upstream}`"""
