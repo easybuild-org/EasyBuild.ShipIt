@@ -144,6 +144,8 @@ let getCommits (filter: GetCommitsFilter) =
         // perhaps to support other CI providers when adding support for them in the PullRequest orchestrator.
         match Environment.tryGet "GITHUB_EVENT_NAME" with
         | Some eventName ->
+            printfn "Detected Github Actions event: %s" eventName
+
             match eventName with
             | "pull_request" -> "HEAD~1"
             | _ -> "HEAD"
