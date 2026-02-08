@@ -32,5 +32,5 @@ jobs:
       #     git remote -vv
       - name: ShipIt (Pull Request)
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ github.EASYBUILD_SHIPIT_GITHUB_TOKEN }}
         run: dotnet run --project src/ -c SHIPIT_EXCEPTION
