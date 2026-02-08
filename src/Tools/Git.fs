@@ -280,7 +280,9 @@ let setUpstreamAndForcePush (remoteName: string) (branchName: string) =
         "git",
         CmdLine.empty
         |> CmdLine.appendRaw "push"
-        |> CmdLine.appendPrefix "--set-upstream" $"{remoteName} {branchName}"
+        |> CmdLine.appendRaw "--set-upstream"
+        |> CmdLine.appendRaw remoteName
+        |> CmdLine.appendRaw branchName
         |> CmdLine.appendRaw "--force"
         |> CmdLine.toString
     )
