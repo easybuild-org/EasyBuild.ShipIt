@@ -166,7 +166,8 @@ let createOrUpdatePullRequest
 
             Git.switchAndMove prContext.BranchName
             Git.commitAll prContext.Title
-            Git.setUpstreamAndForcePush ()
+            let! remoteName = Git.getRemoteName ()
+            Git.setUpstreamAndForcePush remoteName prContext.BranchName
             Git.switch currentBranch
             Git.deleteBranch prContext.BranchName
 

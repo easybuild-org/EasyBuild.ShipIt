@@ -275,12 +275,12 @@ Automatic detection expects URL returned by `git config --get remote.origin.url`
 
 You can use the --github-repo option to specify the repository manually."""
 
-let setUpstreamAndForcePush () =
+let setUpstreamAndForcePush (remoteName: string) (branchName: string) =
     Command.Run(
         "git",
         CmdLine.empty
         |> CmdLine.appendRaw "push"
-        |> CmdLine.appendRaw "--set-upstream"
+        |> CmdLine.appendPrefix "--set-upstream" $"{remoteName} {branchName}"
         |> CmdLine.appendRaw "--force"
         |> CmdLine.toString
     )
@@ -350,3 +350,29 @@ let setLocalConfig (key: string) (value: string) =
         |> CmdLine.appendPrefix key value
         |> CmdLine.toString
     )
+
+let getRemoteName () =
+    try
+        let struct (remoteStdout, _) =
+            Command.ReadAsync(
+                "git",
+                CmdLine.empty
+                |> CmdLine.appendRaw "rev-parse"
+                |> CmdLine.appendRaw "--abbrev-ref"
+                |> CmdLine.appendRaw "--symbolic-full-name"
+                |> CmdLine.appendRaw "@{upstream}"
+                |> CmdLine.toString
+            )
+            |> Async.AwaitTask
+            |> Async.RunSynchronously
+
+        let remoteRef = remoteStdout.Trim()
+
+        remoteRef.Split('/') |> Array.head |> Ok
+    with
+
+    | _ ->
+        Error
+            """Could not determine the name of the remote for the current branch.
+
+Please open an issue we the result of running `git rev-parse --abbrev-ref --symbolic-full-name @{upstream}`"""
