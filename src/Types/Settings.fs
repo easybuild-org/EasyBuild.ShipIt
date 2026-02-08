@@ -13,11 +13,6 @@ type SharedSettings() =
 
     inherit CommandSettings()
 
-    [<CommandOption("--allow-branch <VALUES>")>]
-    [<Description("List of branches that are allowed to be used to generate the changelog")>]
-    [<DefaultValue([| "main" |])>]
-    member val AllowBranch: string array = [| "main" |] with get, set
-
     [<CommandOption("--mode <MODE>")>]
     [<DefaultValue("pull-request")>]
     [<Description("Mode of operation. Possible values are 'local', 'pull-request' and 'push'")>]

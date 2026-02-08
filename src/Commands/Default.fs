@@ -55,7 +55,6 @@ let execute (settings: SharedSettings) (orchestratorResolver: Orchestrator.IReso
 
             // We need to verify that the repository is clean before doing anything
             do! Verify.dirty ()
-            do! Verify.branch settings
 
             let changelogFiles = Changelog.find settings
 

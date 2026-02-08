@@ -2,23 +2,6 @@ module EasyBuild.ShipIt.Generate.Verify
 
 open EasyBuild.ShipIt.Types
 
-let branch (settings: Settings.SharedSettings) =
-    let currentBranchName = Git.getHeadBranchName ()
-
-    if Array.contains currentBranchName settings.AllowBranch then
-        Ok()
-    else
-        let allowedBranch =
-            settings.AllowBranch |> Array.map (String.prepend "- ") |> String.concat "\n"
-
-        Error
-            $"""Branch '%s{currentBranchName}' is not allowed to generate the changelog.
-
-Allowed branches are:
-%s{allowedBranch}
-
-You can use the --allow-branch option to allow other branches."""
-
 let dirty () =
     if Git.isDirty () then
         Error

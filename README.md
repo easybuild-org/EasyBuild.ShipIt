@@ -18,7 +18,7 @@ Tool for generating changelog based on Git history based on [Conventional Commit
 EasyBuild.ShipIt search for any `CHANGELOG.md`, for each of them look at the commits since the last
 released commit (based on the `last_commit_released` configuration) and generate a new changelog entry based on the commit messages.
 
-Then, if the `--skip-pull-request` option is not passed, it will create a pull request with the updated changelog file.
+Optionally, it will create a pull request or commit the changes directly to the current branch based on the [`mode`](#--mode) configuration.
 
 Learn more about:
 
@@ -55,7 +55,6 @@ USAGE:
 OPTIONS:
                                         DEFAULT
     -h, --help                                          Prints help information
-        --allow-branch <VALUES>         main            List of branches that are allowed to be used to generate the changelog
         --mode <MODE>                   pull-request    Mode of operation. Possible values are 'local', 'pull-request' and 'push'
         --pre-release [PREFIX]          beta            Indicate that the generated version is a pre-release version. Optionally, you can provide a prefix for the beta version. Default is 'beta'
         --remote-hostname <HOSTNAME>                    Git remote hostname, e.g. github.com, gitlab.com
@@ -245,15 +244,6 @@ These options allow you to specify the Git remote information. This is useful wh
 
 This information is used to create links to commits, diff, etc. in the generated changelog file.
 
-### `--allow-branch`
-
-**type:** string[]
-**default:** `main`
-
-Restrict the branches that can be used to generate the changelog.
-
-This is a safety measure to avoid generating changelog from a branch that is not intended to be released, e.g. a feature branch.
-
 ### `--skip-invalid-commit`
 
 **type:** bool
@@ -286,8 +276,6 @@ Control the mode in which the tool operates.
 - `local`: Only generate the changelog file locally
 - `pull-request`: Create a pull request with the updated changelog file (default)
 - `push`: Push the updated changelog file directly to the current branch
-
-    **🚨 IMPORTANT:** Make sure to configure `--allow-branch` option to avoid pushing changes to unintended branches.
 
 ## Configuration
 
