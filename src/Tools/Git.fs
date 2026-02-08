@@ -275,11 +275,12 @@ Automatic detection expects URL returned by `git config --get remote.origin.url`
 
 You can use the --github-repo option to specify the repository manually."""
 
-let forcePush () =
+let setUpstreamAndForcePush () =
     Command.Run(
         "git",
         CmdLine.empty
         |> CmdLine.appendRaw "push"
+        |> CmdLine.appendRaw "--set-upstream"
         |> CmdLine.appendRaw "--force"
         |> CmdLine.toString
     )

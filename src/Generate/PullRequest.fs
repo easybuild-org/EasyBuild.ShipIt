@@ -166,7 +166,7 @@ let createOrUpdatePullRequest
 
             Git.switchAndMove prContext.BranchName
             Git.commitAll prContext.Title
-            Git.forcePush ()
+            Git.setUpstreamAndForcePush ()
             Git.switch currentBranch
             Git.deleteBranch prContext.BranchName
 
