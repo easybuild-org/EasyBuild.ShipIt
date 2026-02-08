@@ -126,10 +126,33 @@ Context:
     }
 
 let getCommits (filter: GetCommitsFilter) =
+    let headRef =
+        // When running on Github Actions, if the event is "pull_request"
+        // we are getting an additional commit in the history of type "Merge"
+        // This is because Github creates a merge commit between the base branch and the PR branch to run the workflow on it
+        //
+        // Example:
+        // ecea0cc Merge 11e06e4e7c1e9087f8f3fa0f897c32c830ddb6b4 into 0fc1d5229402c8c1f64213c5e902e01036c2e10a
+        // 11e06e4 ci: try to debug why there is a Merge commit
+        // 68cacfa chore: try to set an initial commit because Git history seems broken on Github
+        //
+        // So we need to detect this case and use "HEAD~1" as the reference to get the "real" last commit instead of the merge commit.
+        //
+        // Otherwise, we default to HEAD.
+        //
+        // This logic could need to be updated in the future to be more strict based on the event or
+        // perhaps to support other CI providers when adding support for them in the PullRequest orchestrator.
+        match Environment.tryGet "GITHUB_EVENT_NAME" with
+        | Some eventName ->
+            match eventName with
+            | "pull_request" -> "HEAD~1"
+            | _ -> "HEAD"
+        | None -> "HEAD"
+
     let commitFilter =
         match filter with
-        | GetCommitsFilter.All -> "HEAD"
-        | GetCommitsFilter.From sha1 -> $"{sha1}..HEAD"
+        | GetCommitsFilter.All -> headRef
+        | GetCommitsFilter.From sha1 -> $"%s{sha1}..%s{headRef}"
 
     let struct (shaStdout, _) =
         Command.ReadAsync(
