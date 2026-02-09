@@ -10,7 +10,8 @@ open EasyBuild.ShipIt.Types.Settings
 open EasyBuild.ShipIt.Commands.Version
 open EasyBuild.ShipIt.Orchestrators.Github
 
-let releaseUsingPush
+let private releaseUsingPush
+    (orchestratorResolver: Orchestrator.IResolver)
     (remoteConfig: RemoteConfig)
     (releaseContexts: ReleaseContext list)
     (settings: SharedSettings)
@@ -23,10 +24,15 @@ let releaseUsingPush
     if prContext.ShouldCreate() |> not then
         Ok()
     else
+        result {
+            let! orchestrator = orchestratorResolver.GetOrchestrator remoteConfig
 
-        Git.commitAll prContext.Title
-        Git.push ()
-        Ok()
+            do! orchestrator.VerifyAndSetupRequirements ReleaseMode.Push
+
+            Git.commitAll prContext.Title
+            Git.push ()
+            return ()
+        }
 
 let execute (settings: SharedSettings) (orchestratorResolver: Orchestrator.IResolver) =
     let res =
@@ -81,8 +87,10 @@ let execute (settings: SharedSettings) (orchestratorResolver: Orchestrator.IReso
                             remoteConfig
                             releaseContexts
                             settings
+
                 | ReleaseMode.Local -> ()
-                | ReleaseMode.Push -> do! releaseUsingPush remoteConfig releaseContexts settings
+                | ReleaseMode.Push ->
+                    do! releaseUsingPush orchestratorResolver remoteConfig releaseContexts settings
 
                 Log.success "Done 🚀"
 

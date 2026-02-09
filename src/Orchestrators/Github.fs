@@ -3,6 +3,7 @@ module EasyBuild.ShipIt.Orchestrators.Github
 open EasyBuild.ShipIt.Types
 open Thoth.Json.Core
 open Thoth.Json.System.Text.Json
+open FsToolkit.ErrorHandling
 
 module OpenedReleasePR =
 
@@ -20,7 +21,6 @@ type GitHubOrchestrator() =
     let ghCli = Gh.CLI()
 
     interface Orchestrator.IOrchestrator with
-        member _.IsAvailable() = ghCli.IsAvailable()
 
         member _.GetOpenedPullRequests(branchName: string) =
             // By default, GitHub CLI returns 30 items, which should be enough for our use case
@@ -68,3 +68,29 @@ type GitHubOrchestrator() =
 
         member _.UpdateReleasePullRequest (prNumber: int) (title: string) (body: string) =
             ghCli.pr.Update(prNumber, title = title, body = body)
+
+        member _.VerifyAndSetupRequirements(mode: ReleaseMode) : Result<unit, string> =
+            let cliAvailable () =
+                if not (ghCli.IsAvailable()) then
+                    Error
+                        "GitHub CLI is not available. Please install it from https://cli.github.com/ and ensure it's in your PATH."
+                else
+                    // We can do additional checks here if needed, for example checking if the user is authenticated with GitHub CLI
+                    Ok()
+
+            result {
+                do! cliAvailable ()
+
+                match mode with
+                | ReleaseMode.Local -> ()
+                | ReleaseMode.PullRequest
+                | ReleaseMode.Push ->
+                    if Environment.isCI () then
+                        Git.setLocalConfig "user.name" "🤖 easybuild-shipit"
+
+                        Git.setLocalConfig
+                            "user.email"
+                            "github-actions[bot]@users.noreply.github.com"
+
+                return ()
+            }

@@ -156,6 +156,8 @@ let createOrUpdatePullRequest
             return ()
         else
 
+            do! orchestrator.VerifyAndSetupRequirements ReleaseMode.PullRequest
+
             // Store the current branch to restore it later
             let currentBranch = Git.getHeadBranchName ()
 
