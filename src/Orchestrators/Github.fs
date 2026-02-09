@@ -78,8 +78,31 @@ type GitHubOrchestrator() =
                     // We can do additional checks here if needed, for example checking if the user is authenticated with GitHub CLI
                     Ok()
 
+            let verifyGithubActionsEvent () =
+                match Environment.tryGet "GITHUB_GITHUB_EVENT_NAME" with
+                // If we are in a GitHub Actions environment, we want to ensure that the event is "push"
+                //
+                // This is because if we are in another event like "pull_request"
+                // there is a risk of not having the right permissions with the default tokens
+                // but more importantly, we would have an additional "Merge" commit in the history
+                //
+                // Example:
+                // ecea0cc Merge 11e06e4e7c1e9087f8f3fa0f897c32c830ddb6b4 into 0fc1d5229402c8c1f64213c5e902e01036c2e10a
+                // 11e06e4 ci: try to debug why there is a Merge commit
+                // 68cacfa chore: try to set an initial commit because Git history seems broken on Github
+                //
+                // For now, we are restricting the usage to "push" events, as it should
+                // cover the need for when running PullRequest or Push mode from Github Actions
+                | Some eventName when eventName = "push" -> Ok()
+                | Some _ ->
+                    Error
+                        "GitHub CLI cannot be used in a GitHub Actions workflow triggered by an event different than 'push'."
+                // We are not in a GitHub Actions environment, we can proceed with the normal checks
+                | None -> Ok()
+
             result {
                 do! cliAvailable ()
+                do! verifyGithubActionsEvent ()
 
                 match mode with
                 | ReleaseMode.Local -> ()
