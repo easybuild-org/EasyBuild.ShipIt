@@ -12,3 +12,6 @@ let tryGet (name: string) =
         Some var
 
 let isCI () = tryGet "CI" |> Option.isSome
+
+let isGithubActions () =
+    tryGet "GITHUB_ACTIONS" |> Option.isSome
