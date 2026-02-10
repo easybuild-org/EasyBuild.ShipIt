@@ -8,9 +8,6 @@ module Label =
     [<Literal>]
     let PENDING = "easybuild-release:pending"
 
-    [<Literal>]
-    let PUBLISHED = "easybuild-release:published"
-
 type OpenedReleasePR =
     {
         Url: string

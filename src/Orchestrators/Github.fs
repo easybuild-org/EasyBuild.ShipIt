@@ -40,11 +40,7 @@ type GitHubOrchestrator() =
             |> List.filter (fun pr -> pr.HeadRefName = branchName)
 
         member _.EnsureLabelsExist() =
-            let references =
-                [
-                    Orchestrator.Label.PENDING
-                    Orchestrator.Label.PUBLISHED
-                ]
+            let references = [ Orchestrator.Label.PENDING ]
 
             let existingLabels =
                 let decoder = Decode.list (Decode.field "name" Decode.string)
