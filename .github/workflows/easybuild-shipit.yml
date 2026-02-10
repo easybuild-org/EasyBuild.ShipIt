@@ -28,7 +28,7 @@ jobs:
       - name: ShipIt (Pull Request)
         run: dotnet run --project src/ -c SHIPIT_EXCEPTION
         env:
-          GH_TOKEN: ${{ secrets.EASYBUILD_SHIPIT_GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   release:
     name: Release

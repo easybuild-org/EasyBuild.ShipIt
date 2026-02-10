@@ -26,7 +26,7 @@ let main args =
 
     app
         .WithDescription(
-            "Automate changelog generation based on conventional commit messages and create pull requests for releases.
+            "Automate 2changelog generation based on conventional commit messages and create pull requests for releases.
 
 The tool will do its best to automatically detect the Git provider based on the git remote URL.
 You can force it to use a specific provider using sub-commands, e.g. 'shipit github' to force using GitHub.
