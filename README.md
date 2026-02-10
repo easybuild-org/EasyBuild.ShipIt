@@ -181,7 +181,7 @@ Then the next version will be released using the base version of the previous pr
 ```
 
 > [!TIP]
-> If you are not sure what will be calculated, you can use the `--skip-pull-request` option to see the result without creating a pull request.
+> If you are not sure what will be calculated, you can use the `--mode local` option to see the result without creating a pull request or committing any changes.
 >
 > You can then reset the changelog using `git restore path/to/CHANGELOG.md` before re-running the command.
 
