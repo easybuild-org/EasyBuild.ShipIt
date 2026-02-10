@@ -41,5 +41,16 @@ jobs:
         uses: actions/setup-dotnet@v5
         with:
           global-json-file: global.json
-      # - name: Build, Test and Release
-      #   run: ./build.sh release
+
+      # Use the ambient GitHub token to login to NuGet and retrieve an API key
+      - name: NuGet login (OIDC → temp API key)
+        uses: NuGet/login@v1
+        id: login
+        with:
+          # Secret is your NuGet username, e.g. andrewlock
+          user: ${{ secrets.NUGET_USER }}
+
+      - name: Build, Test and Release
+        run: ./build.sh release
+        env:
+          NUGET_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
