@@ -24,27 +24,8 @@ type ReleaseCommand() =
         if Directory.Exists VirtualWorkspace.src.bin.``.`` then
             Directory.Delete(VirtualWorkspace.src.bin.``.``, true)
 
-        let (struct (newVersion, _)) =
-            Command.ReadAsync(
-                "dotnet",
-                CmdLine.empty
-                |> CmdLine.appendRaw "run"
-                |> CmdLine.appendPrefix "--project" Workspace.src.``EasyBuild.ShipIt.fsproj``
-                |> CmdLine.appendPrefix "--configuration" "Release"
-                |> CmdLine.appendRaw "--"
-                |> CmdLine.appendSeq context.Remaining.Raw
-                |> CmdLine.toString,
-                workingDirectory = Workspace.``.``
-            )
-            |> Async.AwaitTask
-            |> Async.RunSynchronously
-
         let nupkgPath = DotNet.pack Workspace.src.``.``
 
         DotNet.nugetPush nupkgPath
-
-        Git.addAll ()
-        Git.commitRelease newVersion
-        Git.push ()
 
         0
