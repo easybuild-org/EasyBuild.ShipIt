@@ -237,6 +237,20 @@ The following commit types are supported:
 - **revert** : Reverts a previous commit
 - **build** : Changes that affect the build system or external dependencies
 
+### Extra changelog content
+
+You can define additional content to be added in your changelog entry by surrounding it with `=== changelog ===` markers in your commit message body.
+
+````md
+feat: add `String.split` API
+
+=== changelog ===
+```fs
+let parts = String.split " " "Hello World"
+```
+=== changelog ===
+````
+
 ## CLI options
 
 ### `--remote-hostname`, `--remote-owner`, `--remote-repo`

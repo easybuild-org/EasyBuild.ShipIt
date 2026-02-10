@@ -160,6 +160,7 @@ let createOrUpdatePullRequest
 
             // Store the current branch to restore it later
             let currentBranch = Git.getHeadBranchName ()
+            let! remoteName = Git.getRemoteName ()
 
             // Git operations:
             // 1. Create a new branch and move to it
@@ -168,7 +169,6 @@ let createOrUpdatePullRequest
 
             Git.switchAndMove prContext.BranchName
             Git.commitAll prContext.Title
-            let! remoteName = Git.getRemoteName ()
             Git.setUpstreamAndForcePush remoteName prContext.BranchName
             Git.switch currentBranch
             Git.deleteBranch prContext.BranchName

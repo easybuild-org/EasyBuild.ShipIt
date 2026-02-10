@@ -11,7 +11,8 @@ name: EasyBuild ShipIt
 
 jobs:
   # Run tests and generate a Pull Request to prepare a release
-  shipit:
+  shipit-pr:
+    name: ShipIt - Pull Request
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -26,4 +27,19 @@ jobs:
       - name: ShipIt (Pull Request)
         run: dotnet run --project src/ -c SHIPIT_EXCEPTION
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.EASYBUILD_SHIPIT_GITHUB_TOKEN }}
+
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    if: "startsWith(github.event.head_commit.message, 'chore: release ')"
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+      # - name: Build, Test and Release
+      #   run: ./build.sh release
