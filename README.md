@@ -255,6 +255,43 @@ let parts = String.split " " "Hello World"
 === changelog ===
 ````
 
+### Recommendations
+
+Because EasyBuild.ShipIt relies on your commit messages, it is recommended to use Squash and Merge or Rebase and Merge when merging pull requests to keep a clean commit history.
+
+This avoid the creation of invalid commits like `Merge pull request ...`.
+
+To help enforce this convention, you can go to your Org/Repo GitHub settings:
+
+1. Disable the `Allow merge commits` option in the `General > Pull Requests` section.
+2. Enable `Allow squash merging` option and choose `Pull request title` in the dropdown.
+
+Additionally, you can configure this [GitHub Actions](https://github.com/amannn/action-semantic-pull-request) to validate PRs titles.
+
+```yaml
+# conventional-pr-title.yml
+name: 'Lint PR'
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - reopened
+      - edited
+      # - synchronize (if you use required Actions)
+
+jobs:
+  main:
+    name: Validate PR title
+    runs-on: ubuntu-slim
+    permissions:
+      pull-requests: read
+    steps:
+      - uses: amannn/action-semantic-pull-request@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
+
 ## CLI options
 
 ### `--remote-hostname`, `--remote-owner`, `--remote-repo`
