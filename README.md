@@ -1,5 +1,7 @@
 # EasyBuild.ShipIt
 
+> Focus on writing code, not on writing changelog! 🚀
+
 [![NuGet](https://img.shields.io/nuget/v/EasyBuild.ShipIt.svg)](https://www.nuget.org/packages/EasyBuild.ShipIt)
 
 [![Sponsors badge link](https://img.shields.io/badge/Sponsors_this_project-EA4AAA?style=for-the-badge)](https://mangelmaxime.github.io/sponsors/)
