@@ -29,7 +29,9 @@ let private releaseUsingPush
 
             do! orchestrator.VerifyAndSetupRequirements ReleaseMode.Push
 
-            Git.commitAll prContext.Title
+            let! prTitle = prContext.Title
+
+            Git.commitAll prTitle
             Git.push ()
             return ()
         }
