@@ -30,6 +30,7 @@ Learn more about:
 - [Recipes](#recipes)
     - [Prod / staging environments](#prod--staging-environments)
     - [GitHub Actions (auto release)](#github-actions-auto-release)
+- [Why the name "ShipIt"?](#why-the-name-shipit)
 
 ## Usage
 
@@ -616,6 +617,14 @@ jobs:
         env:
           NUGET_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
 ```
+
+## Why the name "ShipIt"?
+
+The name "ShipIt" is a reference to the famous phrase "Ship it!".
+
+It is also to avoid future potential conflicts in case .NET team decide to add `dotnet release` in .NET CLI.
+
+I felt like `shipit` was a fun and less risky in this regard.
 
 ## Exit codes
 
