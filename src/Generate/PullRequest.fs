@@ -25,11 +25,15 @@ type PullRequestContext
     member _.ShouldCreate() = updatedItems.Count > 0
 
     member _.BranchName =
-        // If we only have on bump, we can use the specific version in the branch name
-        if updatedItems.Count = 1 then
-            $"release/{updatedItems[0].NewVersion}"
+        if items.Length = 1 then
+            // If we only have on bump, we can use the specific version in the branch name
+            if updatedItems.Count = 1 then
+                Ok $"release/{updatedItems[0].NewVersion}"
+            else
+                Error
+                    "Tried to generate a branch name with no updated items, this should not happen"
         else
-            // If we have multiple bumps, we try to make a deterministic branch name
+            // If we have multiple projects, we try to make a deterministic branch name
             // We make a concatenation of all the changelog names and their new versions
             // and then we hash it to produce a short unique identifier
 
@@ -54,16 +58,20 @@ type PullRequestContext
                     .ToLowerInvariant()
                     .Substring(0, 16)
 
-            $"release/multiple-{hash}"
+            Ok $"release/multiple-{hash}"
 
     member _.Title =
-        if updatedItems.Count = 1 then
-            let project = updatedItems[0]
-            let name = project.Changelog.NameWithVersion project.NewVersion gitRepositoryRoot
+        // If the repo only have one project, we can use the specific version in the PR title
+        if items.Length = 1 then
+            match Seq.tryHead updatedItems with
+            | None ->
+                Error "Tried to generate a PR title with no updated items, this should not happen"
+            | Some project ->
+                let name = project.Changelog.NameWithVersion project.NewVersion gitRepositoryRoot
 
-            $"chore: release %s{name}"
+                Ok $"chore: release %s{name}"
         else
-            "chore: release multiple projects"
+            Ok "chore: release multiple projects"
 
     member _.PullRequestSummaryTable =
         let rows =
@@ -167,11 +175,14 @@ let createOrUpdatePullRequest
             // 2. Commit all changes and push the branch
             // 3. Restore the previous branch and delete the temporary branch
 
-            Git.switchAndMove prContext.BranchName
-            Git.commitAll prContext.Title
-            Git.setUpstreamAndForcePush remoteName prContext.BranchName
+            let! branchName = prContext.BranchName
+            let! prTitle = prContext.Title
+
+            Git.switchAndMove branchName
+            Git.commitAll prTitle
+            Git.setUpstreamAndForcePush remoteName branchName
             Git.switch currentBranch
-            Git.deleteBranch prContext.BranchName
+            Git.deleteBranch branchName
 
             let prBody =
                 [
@@ -188,20 +199,17 @@ let createOrUpdatePullRequest
 
             orchestrator.EnsureLabelsExist()
 
-            let openedReleasePRs = orchestrator.GetOpenedPullRequests(prContext.BranchName)
+            let openedReleasePRs = orchestrator.GetOpenedPullRequests(branchName)
 
             // No PR were found, we can create a new one from scratch
             if openedReleasePRs.Length = 0 then
-                orchestrator.CreateReleasePullRequest prContext.BranchName prContext.Title prBody
+                orchestrator.CreateReleasePullRequest branchName prTitle prBody
 
                 return ()
             // A PR already exists, we need to update it
             else if openedReleasePRs.Length = 1 then
                 // Update the existing PR
-                orchestrator.UpdateReleasePullRequest
-                    openedReleasePRs.Head.Number
-                    prContext.Title
-                    prBody
+                orchestrator.UpdateReleasePullRequest openedReleasePRs.Head.Number prTitle prBody
 
                 return ()
             // Multiple PRs were found, we cannot proceed further
