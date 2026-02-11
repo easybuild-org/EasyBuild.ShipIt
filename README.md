@@ -27,6 +27,9 @@ Learn more about:
 - [CLI options](#cli-options)
 - [Configuration](#configuration)
 - [Monorepo support](#monorepo-support)
+- [Recipes](#recipes)
+    - [Prod / staging environments](#prod--staging-environments)
+    - [GitHub Actions (auto release)](#github-actions-auto-release)
 
 ## Usage
 
@@ -531,6 +534,88 @@ When working with production and staging environments, you can use the `pre_rele
 To do that, you need use `--pre-release` CLI option in your staging environment and not use it in your production environment.
 
 We want to use the CLI option here instead of the configuration as it allows to easily switch between pre-release and stable versions without having to change the configuration file.
+
+### GitHub Actions (auto release)
+
+EasyBuild.ShipIt has been designed to make it easy to integrate into your CI/CD pipeline, and in particular with GitHub Actions.
+
+Below is an example of how to use it, so it update the CHANGELOG.md file in a pull request. Once the pull request is merged, it will trigger a workflow to publish the packages.
+
+#### Requirements
+
+1. Go to GitHub settings of your Org or Repo, and enable `Actions > General > Allow GitHub Actions to create and approve pull requests`.
+
+    If you prefers, you can also create a Personal Access Token (PAT) and use it instead of `secrets.GITHUB_TOKEN`.
+
+2. Create a `.github/workflows/easybuild-shipit.yml` file with the following content:
+
+```yaml
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
+name: EasyBuild ShipIt
+
+jobs:
+  # Run tests and generate a Pull Request to prepare a release
+  shipit-pr:
+    name: ShipIt - Pull Request
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          # We need to fetch more than the last commit to be able to generate the changelog based on the commit history.
+          # Adapt this value based on your needs.
+          fetch-depth: 50
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+      # Run your tests before generating the changelog to make sure everything is working fine before creating a pull request.
+      - name: Build and test
+        run: echo "Run your build and tests here"
+      - name: ShipIt (Pull Request)
+        run: dotnet run --project src/ -c SHIPIT_EXCEPTION
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    # Only trigger this workflow when a commit starting with `chore: release ` is pushed.
+    if: "startsWith(github.event.head_commit.message, 'chore: release ')"
+    steps:
+      - uses: actions/checkout@v6
+      # Configure how you want to publish your package, e.g. using the NuGet CLI, dotnet CLI, NPM, etc.
+      # It is recommanded to use Trusted Publishing to avoid having to manage API keys in your repository.
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      # Below is an example, for NuGet packages (to demonstrate that we are getting
+      # the API key from the OIDC token exchange and not from a secret in the repository).
+      - name: NuGet login (OIDC → temp API key)
+        uses: NuGet/login@v1
+        id: login
+        with:
+          # Secret is your NuGet username, e.g. andrewlock
+          # This is actually a public information, so we can using a secret is probably overkill
+          user: ${{ secrets.NUGET_USER }}
+
+      - name: Build, Test and Release
+        run: |
+            dotnet pack src/ -c Release -o ./nupkgs
+            dotnet nuget push ./nupkgs/*.nupkg --api-key $NUGET_KEY
+        env:
+          NUGET_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
+```
 
 ## Exit codes
 
