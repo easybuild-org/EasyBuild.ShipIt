@@ -621,7 +621,7 @@ jobs:
       - name: Build and test
         run: echo "Run your build and tests here"
       - name: ShipIt (Pull Request)
-        run: dotnet run --project src/ -c SHIPIT_EXCEPTION
+        run: dotnet shipit
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
