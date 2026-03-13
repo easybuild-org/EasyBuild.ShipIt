@@ -41,13 +41,11 @@ type SharedSettings() =
     member val RemoteRepo: string option = None with get, set
 
     [<CommandOption("--skip-invalid-commit")>]
-    [<Description("Skip invalid commits instead of failing")>]
-    [<DefaultValue(false)>]
+    [<Description("Skip invalid commits instead of failing (default: false)")>]
     member val SkipInvalidCommit: FlagValue<bool> = FlagValue() with get, set
 
     [<CommandOption("--skip-merge-commit")>]
-    [<Description("Skip merge commits when generating the changelog (commit messages starting with 'Merge ')")>]
-    [<DefaultValue(false)>]
+    [<Description("Skip merge commits when generating the changelog (commit messages starting with 'Merge ') (default: false)")>]
     member val SkipMergeCommit: FlagValue<bool> = FlagValue() with get, set
 
     member val Cwd = System.Environment.CurrentDirectory with get, set
