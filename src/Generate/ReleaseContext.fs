@@ -168,6 +168,12 @@ let compute
                         $"Failed to parse commit message:
 
 ==============
+Changelog
+==============
+
+%s{changelog.File.FullName}
+
+==============
 Commit
 ==============
 

@@ -459,7 +459,13 @@ type ComputeTests() =
         | :? FailedToParseCommit as ex ->
             Expect.equal
                 ex.msg
-                """Failed to parse commit message:
+                $"""Failed to parse commit message:
+
+==============
+Changelog
+==============
+
+%s{Workspace.``valid_changelog.md``}
 
 ==============
 Commit
