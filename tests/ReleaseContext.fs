@@ -288,10 +288,7 @@ type ComputeTests() =
     [<Test>]
     member _.``If --skip-invalid-commit is false, fail on invalid commit message``() =
         let settings =
-            DefaultCommandSettings(
-                SkipInvalidCommit = FlagValue(Value = false, IsSet = true),
-                GitRepositoryRoot = Workspace.``.``
-            )
+            DefaultCommandSettings(SkipInvalidCommit = false, GitRepositoryRoot = Workspace.``.``)
 
         let changelogInfo =
             {
@@ -317,10 +314,7 @@ type ComputeTests() =
     [<Test>]
     member _.``If --skip-invalid-commit is true, skip invalid commit messages``() =
         let defaultGenerateSettings =
-            DefaultCommandSettings(
-                SkipInvalidCommit = FlagValue(Value = true, IsSet = true),
-                GitRepositoryRoot = Workspace.``.``
-            )
+            DefaultCommandSettings(SkipInvalidCommit = true, GitRepositoryRoot = Workspace.``.``)
 
         let changelogInfo =
             {
@@ -370,10 +364,7 @@ type ComputeTests() =
     [<Test>]
     member _.``If --skip-merge-commit is true, skip merge commits``() =
         let defaultGenerateSettings =
-            DefaultCommandSettings(
-                SkipMergeCommit = FlagValue(Value = true, IsSet = true),
-                GitRepositoryRoot = Workspace.``.``
-            )
+            DefaultCommandSettings(SkipMergeCommit = true, GitRepositoryRoot = Workspace.``.``)
 
         let changelogInfo =
             {
@@ -427,10 +418,7 @@ type ComputeTests() =
     [<Test>]
     member _.``If --skip-merge-commit is false, do not skip merge commits``() =
         let settings =
-            DefaultCommandSettings(
-                SkipMergeCommit = FlagValue(Value = false, IsSet = true),
-                GitRepositoryRoot = Workspace.``.``
-            )
+            DefaultCommandSettings(SkipMergeCommit = false, GitRepositoryRoot = Workspace.``.``)
 
         let changelogInfo =
             {

@@ -160,8 +160,8 @@ let compute
                         SemanticCommit = semanticCommit
                     }
             | Error error ->
-                let skipMergeCommit = FlagValue.orFalse settings.SkipMergeCommit
-                let skipInvalidCommit = FlagValue.orFalse settings.SkipInvalidCommit
+                let skipMergeCommit = settings.SkipMergeCommit
+                let skipInvalidCommit = settings.SkipInvalidCommit
 
                 let reportError () =
                     let error =
