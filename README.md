@@ -386,6 +386,9 @@ include:
 
 > [!NOTE]
 > It always include files in the same directory as the changelog file, so you don't need to include it in the configuration.
+<!-- markdownlint-disable-next-line -->
+> [!TIP]
+> EasyBuild.ShipIt is using Microsoft.Extensions.FileSystemGlobbing to match the files to include. Please refer to [their documentation](https://learn.microsoft.com/en-us/dotnet/core/extensions/file-globbing) for more information about the supported patterns.
 
 ### `exclude`
 
@@ -397,6 +400,9 @@ Allows to exclude commits from specific paths.
 exclude:
   - tests/
 ```
+
+> [!TIP]
+> EasyBuild.ShipIt is using Microsoft.Extensions.FileSystemGlobbing to match the files to include. Please refer to [their documentation](https://learn.microsoft.com/en-us/dotnet/core/extensions/file-globbing) for more information about the supported patterns.
 
 ### `pre_release`
 
