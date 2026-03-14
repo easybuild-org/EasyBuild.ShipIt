@@ -46,8 +46,7 @@ let findVersions (content: string) =
 let find (settings: Settings.SharedSettings) =
     let matcher = Matcher()
     matcher.AddInclude("**/CHANGELOG.md") |> ignore
-    matcher.AddExclude("**/node_modules/**") |> ignore
-    matcher.AddExclude("**/fable_modules/**") |> ignore
+
 #if SHIPIT_EXCEPTION
     // When releasing EasyBuild.ShipIt, we need to ignore CHANGELOG.md files used in the tests
     matcher.AddExclude("**/tests/**/CHANGELOG.md") |> ignore
@@ -58,6 +57,7 @@ let find (settings: Settings.SharedSettings) =
 
     matcher.Execute(dirWrapper).Files
     |> Seq.map (fun file -> Path.Combine(settings.Cwd, file.Path) |> FileInfo)
+    |> Seq.filter (fun file -> not (Git.isGitIgnored settings.Cwd file.FullName))
 
 let tryLoad (changelogFile: FileInfo) =
     result {

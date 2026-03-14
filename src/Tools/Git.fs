@@ -250,6 +250,25 @@ Automatic detection expects URL returned by `git config --get remote.origin.url`
 
 You can use the --github-repo option to specify the repository manually."""
 
+let isGitIgnored (cwd: string) (filePath: string) =
+    try
+        Command.ReadAsync(
+            "git",
+            CmdLine.empty
+            |> CmdLine.appendRaw "check-ignore"
+            |> CmdLine.appendRaw "--quiet"
+            |> CmdLine.appendRaw filePath
+            |> CmdLine.toString,
+            workingDirectory = cwd
+        )
+        |> Async.AwaitTask
+        |> Async.RunSynchronously
+        |> ignore
+
+        true
+    with _ ->
+        false
+
 let setUpstreamAndForcePush (remoteName: string) (branchName: string) =
     Command.Run(
         "git",
