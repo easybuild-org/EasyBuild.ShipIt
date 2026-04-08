@@ -33,7 +33,9 @@ let computeVersion
         else
             changelog.Metadata.PreRelease
 
-    if refVersion.IsPrerelease then
+    if commitsForRelease.IsEmpty then
+        None
+    else if refVersion.IsPrerelease then
         match preRelease with
         | Some preReleasePrefix ->
             // If the pre-release identifier is the same, then increment the pre-release number

@@ -649,6 +649,35 @@ type ComputeVersionTests() =
         Expect.equal actual (Some(SemVersion.ParsedFrom(3, 0, 0, "beta.1")))
 
     [<Test>]
+    member _.``If user request a pre-release, for a pre-release and no commit are considered we should not bump the version``
+        ()
+        =
+        let settings = DefaultCommandSettings()
+
+        let commits: CommitForRelease list = []
+
+        let changelogInfo =
+            {
+                File = FileInfo(Workspace.``valid_changelog.md``)
+                Content = STANDARD_CHANGELOG
+                Versions = [ SemVersion(0, 0, 0) ]
+                Metadata =
+                    { ChangelogMetadata.Empty with
+                        PreRelease = Some "beta"
+                    }
+            }
+
+        let actual =
+            ReleaseContext.computeVersion
+                settings
+                changelogInfo
+                commits
+                (SemVersion.ParsedFrom(3, 0, 0, "beta.10"))
+
+        // No version bump required
+        Expect.equal actual None
+
+    [<Test>]
     member _.``If user request a pre-release, should bump minor and make start a pre-release if previous version was stable and changes include new features``
         ()
         =
