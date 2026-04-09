@@ -156,7 +156,7 @@ If yes, please check the error above for potential issues."""
 
         static member Encoder(updater: Updater) =
             match updater with
-            | ReplaceRegex info -> Encode.object [ "replace_regex", UpdateVersionInfo.Encoder info ]
+            | ReplaceRegex info -> Encode.object [ "regex", UpdateVersionInfo.Encoder info ]
             | PackageJson file ->
                 Encode.object [ "package.json", Encode.object [ "file", Encode.string file ] ]
             | JsonPatch info -> Encode.object [ "json", JsonUpdaterInfo.Encoder info ]

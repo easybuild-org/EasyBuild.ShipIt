@@ -2,7 +2,7 @@
 ---
 last_commit_released: 0b1899bb03d3eb86a30c84aa4c66c037527fbd14
 updaters:
-  - replace_regex:
+  - regex:
       file: files/some_file.txt
       pattern: '(?<=^Last released version: ).*(?=\s*$)'
 ---
