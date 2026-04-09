@@ -1,5 +1,6 @@
 ---
 last_commit_released: e92ad748632b82d5e03884d8bd0965740eed8592
+force_version: 2.0.2
 ---
 
 # Changelog
