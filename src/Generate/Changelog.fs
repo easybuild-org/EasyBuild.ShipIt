@@ -46,6 +46,12 @@ let findVersions (content: string) =
 let find (settings: Settings.SharedSettings) =
     let matcher = Matcher()
     matcher.AddInclude("**/CHANGELOG.md") |> ignore
+    // Ignore common directories that may contain changelogs that we don't want to pick up
+    //
+    // Git ignored check is not enough when the package manager uses symlinks (e.g. pnpm),
+    // since the symlinked files are not actually in the git repository
+    matcher.AddExclude("**/node_modules/**") |> ignore
+    matcher.AddExclude("**/fable_modules/**") |> ignore
 
 #if SHIPIT_EXCEPTION
     // When releasing EasyBuild.ShipIt, we need to ignore CHANGELOG.md files used in the tests
