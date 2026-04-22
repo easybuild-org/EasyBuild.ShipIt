@@ -14,7 +14,9 @@ let info msg =
 let success msg =
     output.MarkupLine("[green]{0}[/]", Markup.Escape(msg))
 
-let log msg = output.MarkupLine(msg)
+let log msg = output.MarkupLine(Markup.Escape(msg))
+
+let newLine () = output.WriteLine()
 
 let error msg =
     output.MarkupLine("[red]{0}[/]", Markup.Escape(msg))

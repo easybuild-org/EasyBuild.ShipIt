@@ -46,7 +46,10 @@ let execute (settings: SharedSettings) (orchestratorResolver: Orchestrator.IReso
             let! releaseMode = Verify.releaseMode settings.Mode
 
             // We need to verify that the repository is clean before doing anything
-            do! Verify.dirty ()
+            // DryRun bypasses this check since it doesn't modify the repository
+            if not settings.DryRun then
+                do! Verify.dirty ()
+
             do! Verify.branch settings
 
             let changelogFiles = Changelog.find settings
@@ -75,28 +78,39 @@ let execute (settings: SharedSettings) (orchestratorResolver: Orchestrator.IReso
                     ReleaseContext.compute settings changelogInfo commits config.CommitParserConfig
                 )
 
-            let! _ = releaseContexts |> List.traverseResultM (ReleaseContext.apply remoteConfig)
+            // In dry-run mode, preview the changes without applying them
+            if settings.DryRun then
+                DryRun.preview remoteConfig releaseContexts settings
 
-            // Now we can generate the Pull Request with all the changelog updates
-            if releaseContexts.Length = 0 then
-                Log.success "No changelog was bumped, nothing to ship."
+                return 0
             else
-                match releaseMode with
-                | ReleaseMode.PullRequest ->
-                    do!
-                        PullRequest.createOrUpdatePullRequest
-                            orchestratorResolver
-                            remoteConfig
-                            releaseContexts
-                            settings
+                let! _ = releaseContexts |> List.traverseResultM (ReleaseContext.apply remoteConfig)
 
-                | ReleaseMode.Local -> ()
-                | ReleaseMode.Push ->
-                    do! releaseUsingPush orchestratorResolver remoteConfig releaseContexts settings
+                // Now we can generate the Pull Request with all the changelog updates
+                if releaseContexts.Length = 0 then
+                    Log.success "No changelog was bumped, nothing to ship."
+                else
+                    match releaseMode with
+                    | ReleaseMode.PullRequest ->
+                        do!
+                            PullRequest.createOrUpdatePullRequest
+                                orchestratorResolver
+                                remoteConfig
+                                releaseContexts
+                                settings
 
-                Log.success "Done 🚀"
+                    | ReleaseMode.Local -> ()
+                    | ReleaseMode.Push ->
+                        do!
+                            releaseUsingPush
+                                orchestratorResolver
+                                remoteConfig
+                                releaseContexts
+                                settings
 
-            return 0
+                    Log.success "Done 🚀"
+
+                return 0
         }
 
     match res with

@@ -50,6 +50,11 @@ type SharedSettings() =
     [<DefaultValue(false)>]
     member val SkipMergeCommit: bool = false with get, set
 
+    [<CommandOption("--dry-run")>]
+    [<Description("Preview the changes that would be made without actually applying them")>]
+    [<DefaultValue(false)>]
+    member val DryRun: bool = false with get, set
+
     member val Cwd = System.Environment.CurrentDirectory with get, set
 
     /// <summary>

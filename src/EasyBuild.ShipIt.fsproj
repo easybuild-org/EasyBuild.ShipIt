@@ -38,6 +38,7 @@
         <Compile Include="Generate/Updater.fs" />
         <Compile Include="Generate/ReleaseContext.fs" />
         <Compile Include="Generate/PullRequest.fs" />
+        <Compile Include="Generate/DryRun.fs" />
         <Compile Include="Commands/Version.fs" />
         <Compile Include="Commands/Default.fs" />
         <Compile Include="Commands/Github.fs" />

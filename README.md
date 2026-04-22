@@ -67,8 +67,9 @@ OPTIONS:
         --remote-hostname <HOSTNAME>                    Git remote hostname, e.g. github.com, gitlab.com
         --remote-owner <OWNER>                          Git remote owner or organization name
         --remote-repo <REPO>                            Git remote repository name
-        --skip-invalid-commit           False           Skip invalid commits instead of failing
-        --skip-merge-commit             False           Skip merge commits when generating the changelog (commit messages starting with 'Merge ')
+        --skip-invalid-commit                           Skip invalid commits instead of failing
+        --skip-merge-commit                             Skip merge commits when generating the changelog (commit messages starting with 'Merge ')
+        --dry-run [LEVEL]               minimal         Preview the changes without modifying any files or creating pull requests. Optionally, provide 'minimal' or 'verbose'. Default is 'minimal'
     -v, --version                                       Show version information
 
 COMMANDS:
@@ -345,6 +346,16 @@ Control the mode in which the tool operates.
 - `push`: Push the updated changelog file directly to the current branch
 
     **🚨 IMPORTANT:** Make sure to configure `--allow-branch` option to avoid pushing changes to unintended branches.
+
+### `--dry-run`
+
+**type:** bool
+**default:** false
+
+Preview the changes without modifying any files or creating pull requests. This is useful to verify that your repository is set up correctly and that the tool computes the expected versions.
+
+> [!TIP]
+> `--dry-run` can be run on a dirty repository since it does not modify any files.
 
 ## Configuration
 
