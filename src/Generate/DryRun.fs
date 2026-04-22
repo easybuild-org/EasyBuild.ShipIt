@@ -81,6 +81,7 @@ let private renderSummaryTable (releaseContexts: ReleaseContext list) (gitReposi
     |> Table.withColumn "Project"
     |> Table.withColumn (TableColumn.column "Status" |> TableColumn.centered)
     |> Table.withColumn (TableColumn.column "New Version" |> TableColumn.centered)
+    |> Table.withRowSeparators
     |> addRows
     |> Log.output.Write
 
