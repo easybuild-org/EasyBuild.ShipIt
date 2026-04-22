@@ -45,7 +45,13 @@ type GitHubOrchestrator() =
             let existingLabels =
                 let decoder = Decode.list (Decode.field "name" Decode.string)
 
-                ghCli.label.List(jsonFields = [ Gh.Label.List.Fields.Name ])
+                ghCli.label.List(
+                    // When requesting labels using --json GitHub CLI does not
+                    // return enough information to be able to implement pagination
+                    // So we set a high limit to maximize the chance to get all the labels in one request
+                    limit = 100,
+                    jsonFields = [ Gh.Label.List.Fields.Name ]
+                )
                 |> Decode.unsafeFromString decoder
 
             references

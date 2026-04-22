@@ -219,7 +219,7 @@ module Label =
 
 type LabelCommand() =
 
-    member _.List(?jsonFields: Label.List.Fields list) =
+    member _.List(?limit: int, ?jsonFields: Label.List.Fields list) =
         let jsonFields = jsonFields |> Option.map (List.map _.AsText >> String.concat ",")
 
         let struct (standardOutput, _) =
@@ -228,6 +228,7 @@ type LabelCommand() =
                 CmdLine.empty
                 |> CmdLine.appendRaw "label"
                 |> CmdLine.appendRaw "list"
+                |> CmdLine.appendPrefixIfSome "--limit" (Option.map string limit)
                 |> CmdLine.appendPrefixIfSome "--json" jsonFields
                 |> CmdLine.toString
             )
