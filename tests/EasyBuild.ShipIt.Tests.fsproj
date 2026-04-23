@@ -17,6 +17,7 @@
         <Compile Include="ReleaseContext.fs" />
         <Compile Include="Changelog.fs" />
         <Compile Include="InitChangelog.fs" />
+        <Compile Include="InitWorkflows.fs" />
         <Compile Include="Updaters.fs" />
         <Compile Include="GlobalSetup.fs" />
         <Compile Include="Thoth.Yaml.Decode.fs" />

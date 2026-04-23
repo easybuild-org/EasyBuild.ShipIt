@@ -22,6 +22,15 @@ type InitChangelogSettings() =
     /// </summary>
     member val Cwd = System.Environment.CurrentDirectory with get, set
 
+type InitWorkflowsSettings() =
+    inherit CommandSettings()
+
+    /// <summary>
+    /// This is an internal setting used for testing purposes to force the working directory.
+    /// It is not exposed as a command line option and should only be set programmatically in tests.
+    /// </summary>
+    member val Cwd = System.Environment.CurrentDirectory with get, set
+
 type SharedSettings() =
 
     inherit CommandSettings()

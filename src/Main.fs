@@ -6,6 +6,7 @@ open EasyBuild.ShipIt.Commands.Default
 open EasyBuild.ShipIt.Commands.Github
 open EasyBuild.ShipIt.Commands.Conventions
 open EasyBuild.ShipIt.Commands.InitChangelog
+open EasyBuild.ShipIt.Commands.InitWorkflows
 
 let mutable private helpWasCalled = false
 
@@ -62,6 +63,11 @@ Learn more at https://github.com/easybuild-org/EasyBuild.ShipIt"
                     init
                         .AddCommand<InitChangelogCommand>("changelog")
                         .WithDescription("Create a minimal changelog file")
+                    |> ignore
+
+                    init
+                        .AddCommand<InitWorkflowsCommand>("workflows")
+                        .WithDescription("Create recommended GitHub Actions workflows")
                     |> ignore
             )
             |> ignore
