@@ -13,7 +13,16 @@ open FsToolkit.ErrorHandling
 
 [<Literal>]
 let EMPTY_CHANGELOG =
-    """# Changelog
+    """---
+# If you are adopting EasyBuild.ShipIt from an existing project, it is recommended to fill in the hash
+# of the last commit released below
+# last_commit_released: ...
+#
+# Learn more about configuration at
+# https://github.com/easybuild-org/EasyBuild.ShipIt#configuration
+---
+
+# Changelog
 
 All notable changes to this project will be documented in this file.
 
@@ -22,6 +31,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 This changelog is generated using [EasyBuild.ShipIt](https://github.com/easybuild-org/EasyBuild.ShipIt).
 
 ⚠ Only edit the front matter metadata at the top of this file. All other changes will be overwritten when a new release is created.
+
+## 0.0.0
 """
 
 let findVersions (content: string) =
@@ -101,9 +112,19 @@ let tryLoad (changelogFile: FileInfo) =
                     if String.IsNullOrWhiteSpace(metadataText) then
                         Ok ChangelogMetadata.Empty
                     else
-                        match Decode.fromString ChangelogMetadata.Decoder metadataText with
-                        | Ok changelogMetadata -> Ok changelogMetadata
-                        | Error error -> Error $"Failed to parse changelog metadata:\n\n{error}"
+                        let commentsOnly =
+                            metadataText
+                            |> String.splitBy '\n'
+                            |> List.forall (fun line ->
+                                line.StartsWith("#") || String.IsNullOrWhiteSpace line
+                            )
+
+                        if commentsOnly then
+                            Ok ChangelogMetadata.Empty
+                        else
+                            match Decode.fromString ChangelogMetadata.Decoder metadataText with
+                            | Ok changelogMetadata -> Ok changelogMetadata
+                            | Error error -> Error $"Failed to parse changelog metadata:\n\n{error}"
 
                 return
                     {

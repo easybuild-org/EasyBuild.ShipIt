@@ -1,10 +1,11 @@
-﻿module EasyBuild.ShipIt.Main
+module EasyBuild.ShipIt.Main
 
 open Spectre.Console.Cli
 open EasyBuild.ShipIt.Commands.Version
 open EasyBuild.ShipIt.Commands.Default
 open EasyBuild.ShipIt.Commands.Github
 open EasyBuild.ShipIt.Commands.Conventions
+open EasyBuild.ShipIt.Commands.InitChangelog
 
 let mutable private helpWasCalled = false
 
@@ -51,6 +52,18 @@ Learn more at https://github.com/easybuild-org/EasyBuild.ShipIt"
             |> ignore
 
             config.AddCommand<GithubCommand>("github").WithDescription("Publish to GitHub")
+            |> ignore
+
+            config.AddBranch<CommandSettings>(
+                "init",
+                fun init ->
+                    init.SetDescription "Initialize project configuration files"
+
+                    init
+                        .AddCommand<InitChangelogCommand>("changelog")
+                        .WithDescription("Create a minimal changelog file")
+                    |> ignore
+            )
             |> ignore
         )
 

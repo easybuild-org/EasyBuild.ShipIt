@@ -43,6 +43,7 @@
         <Compile Include="Commands/Default.fs" />
         <Compile Include="Commands/Github.fs" />
         <Compile Include="Commands/Conventions.fs" />
+        <Compile Include="Commands/InitChangelog.fs" />
         <Compile Include="Main.fs" />
     </ItemGroup>
 

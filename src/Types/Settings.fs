@@ -9,6 +9,19 @@ type VersionSettings() =
 type ConventionsSettings() =
     inherit CommandSettings()
 
+type InitChangelogSettings() =
+    inherit CommandSettings()
+
+    [<CommandArgument(0, "[PATH]")>]
+    [<Description("Path where the changelog should be created. Defaults to CHANGELOG.md")>]
+    member val Path: string option = None with get, set
+
+    /// <summary>
+    /// This is an internal setting used for testing purposes to force the working directory.
+    /// It is not exposed as a command line option and should only be set programmatically in tests.
+    /// </summary>
+    member val Cwd = System.Environment.CurrentDirectory with get, set
+
 type SharedSettings() =
 
     inherit CommandSettings()

@@ -1,5 +1,6 @@
 module EasyBuild.ShipIt.Tests.Changelog
 
+open System
 open Workspace
 open TUnit.Core
 open Tests.Utils
@@ -637,3 +638,23 @@ type UpdateChangelogWithNewVersionTests() =
                     }
                 |> verifyMarkdown
         }
+
+    [<Test>]
+    member _.``Changelog.tryLoad should work on the EMPTY_CHANGELOG included in EasyBuild.ShipIt``
+        ()
+        =
+        let tempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".md")
+        File.WriteAllText(tempPath, Changelog.EMPTY_CHANGELOG)
+
+        try
+            let fileInfo = FileInfo(tempPath)
+            let result = Changelog.tryLoad fileInfo
+            Expect.isOk result
+
+            match result with
+            | Ok changelogInfo ->
+                Expect.equal changelogInfo.Versions [ SemVersion(0, 0, 0) ]
+                Expect.equal changelogInfo.Metadata ChangelogMetadata.Empty
+            | Error _ -> ()
+        finally
+            File.Delete(tempPath)
