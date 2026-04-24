@@ -190,7 +190,12 @@ module Decode =
                 | false, _ -> Error("", BadField(fieldName, node))
             | _ -> Error("", BadType("an object", node))
 
-    let private decodeMaybeNull (path: string) (decoder: Decoder<'value>) (value: YamlNode) =
+    let private decodeMaybeNull
+        (path: string)
+        (decoder: Decoder<'value>)
+        (value: YamlNode)
+        : Result<'value option, DecoderError>
+        =
         // The decoder may be an option decoder so give it an opportunity to check null values
         // We catch the null value case first to avoid executing the decoder logic
         // Indeed, if the decoder logic try to access the value to do something with it,
