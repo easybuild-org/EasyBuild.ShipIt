@@ -91,8 +91,15 @@ let private renderPullRequestSummary
     (settings: Settings.SharedSettings)
     =
 
+    let currentBranch = Git.getHeadBranchName ()
+
     let prContext =
-        PullRequest.PullRequestContext(releaseContexts, settings.GitRepositoryRoot, remoteConfig)
+        PullRequest.PullRequestContext(
+            releaseContexts,
+            settings.GitRepositoryRoot,
+            remoteConfig,
+            currentBranch
+        )
 
     if prContext.ShouldCreate() then
         Table.empty

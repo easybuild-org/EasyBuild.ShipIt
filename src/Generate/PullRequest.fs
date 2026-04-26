@@ -7,7 +7,12 @@ open System.Text.RegularExpressions
 open FsToolkit.ErrorHandling
 
 type PullRequestContext
-    (items: ReleaseContext list, gitRepositoryRoot: string, remoteConfig: RemoteConfig)
+    (
+        items: ReleaseContext list,
+        gitRepositoryRoot: string,
+        remoteConfig: RemoteConfig,
+        targetBranch: string
+    )
     =
     // Track only the items that require a version bump
     // This simplifies the logic to determine if a PR should be created,
@@ -24,41 +29,7 @@ type PullRequestContext
 
     member _.ShouldCreate() = updatedItems.Count > 0
 
-    member _.BranchName =
-        if items.Length = 1 then
-            // If we only have on bump, we can use the specific version in the branch name
-            if updatedItems.Count = 1 then
-                Ok $"release/{updatedItems[0].NewVersion}"
-            else
-                Error
-                    "Tried to generate a branch name with no updated items, this should not happen"
-        else
-            // If we have multiple projects, we try to make a deterministic branch name
-            // We make a concatenation of all the changelog names and their new versions
-            // and then we hash it to produce a short unique identifier
-
-            let concatenatedInfo =
-                updatedItems
-                |> Seq.map (fun bumpInfo ->
-                    let projectName = bumpInfo.Changelog.NameOrDirectoryPath gitRepositoryRoot
-
-                    $"{projectName}:{bumpInfo.NewVersion}"
-                )
-                |> String.concat "|"
-
-            let hash =
-                use sha1 = Security.Cryptography.SHA1.Create()
-
-                let hashBytes =
-                    sha1.ComputeHash(System.Text.Encoding.UTF8.GetBytes(concatenatedInfo))
-
-                BitConverter
-                    .ToString(hashBytes)
-                    .Replace("-", "")
-                    .ToLowerInvariant()
-                    .Substring(0, 16)
-
-            Ok $"release/multiple-{hash}"
+    member _.BranchName = Ok $"release/{targetBranch}"
 
     member _.Title =
         // If the repo only have one project, we can use the specific version in the PR title
@@ -157,8 +128,17 @@ let createOrUpdatePullRequest
     result {
         let! orchestrator = orchestratorResolver.GetOrchestrator remoteConfig
 
+        // Store the current branch to restore it later
+        // We also use it as part of the PR branch name to ensure we have only one PR per target branch
+        let currentBranch = Git.getHeadBranchName ()
+
         let prContext =
-            PullRequestContext(releaseContexts, settings.GitRepositoryRoot, remoteConfig)
+            PullRequestContext(
+                releaseContexts,
+                settings.GitRepositoryRoot,
+                remoteConfig,
+                currentBranch
+            )
 
         if prContext.ShouldCreate() |> not then
             return ()
@@ -166,8 +146,6 @@ let createOrUpdatePullRequest
 
             do! orchestrator.VerifyAndSetupRequirements ReleaseMode.PullRequest
 
-            // Store the current branch to restore it later
-            let currentBranch = Git.getHeadBranchName ()
             let! remoteName = Git.getRemoteName ()
 
             // Git operations:

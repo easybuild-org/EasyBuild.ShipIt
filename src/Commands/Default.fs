@@ -18,8 +18,15 @@ let private releaseUsingPush
     =
 
     // Re-use the information from the PullRequestContext
+    let currentBranch = Git.getHeadBranchName ()
+
     let prContext =
-        PullRequest.PullRequestContext(releaseContexts, settings.GitRepositoryRoot, remoteConfig)
+        PullRequest.PullRequestContext(
+            releaseContexts,
+            settings.GitRepositoryRoot,
+            remoteConfig,
+            currentBranch
+        )
 
     if prContext.ShouldCreate() |> not then
         Ok()
