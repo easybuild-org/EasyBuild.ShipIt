@@ -76,6 +76,7 @@ COMMANDS:
     version
     conventions    List supported Conventional Commit types
     github         Publish to GitHub
+    init           Initialize project configuration files
 ```
 
 ## How is the version calculated?
