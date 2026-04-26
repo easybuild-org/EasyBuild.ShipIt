@@ -40,9 +40,45 @@ Learn more about:
 # Install the tool
 dotnet tool install EasyBuild.ShipIt
 
+# Initialize your project (optional)
+dotnet shipit init changelog
+
 # Run the tool
 dotnet shipit
 ```
+
+### `init` command
+
+The `init` command provides subcommands to scaffold the files needed to start using ShipIt.
+
+#### `init changelog`
+
+Generate a minimal `CHANGELOG.md` with the required front matter:
+
+```bash
+# Default: creates CHANGELOG.md in the current directory
+dotnet shipit init changelog
+
+# Custom path
+dotnet shipit init changelog docs/CHANGELOG.md
+```
+
+The command fails if a file already exists at the target path.
+
+#### `init workflows`
+
+Generate recommended GitHub Actions workflows in `.github/workflows/`:
+
+```bash
+dotnet shipit init workflows
+```
+
+This creates:
+
+- `conventional-pr-title.yml` – validates pull request titles follow Conventional Commits
+- `easybuild-shipit.yml` – example workflow for running ShipIt in CI/CD
+
+The command fails if any of the workflow files already exist.
 
 ### CLI manual
 
