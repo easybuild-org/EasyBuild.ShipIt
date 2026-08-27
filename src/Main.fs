@@ -7,6 +7,7 @@ open EasyBuild.ShipIt.Commands.Github
 open EasyBuild.ShipIt.Commands.Conventions
 open EasyBuild.ShipIt.Commands.InitChangelog
 open EasyBuild.ShipIt.Commands.InitWorkflows
+open EasyBuild.ShipIt.Commands.InitGithub
 
 let mutable private helpWasCalled = false
 
@@ -58,7 +59,7 @@ Learn more at https://github.com/easybuild-org/EasyBuild.ShipIt"
             config.AddBranch<CommandSettings>(
                 "init",
                 fun init ->
-                    init.SetDescription "Initialize project configuration files"
+                    init.SetDescription "Initialize project configuration and GitHub settings"
 
                     init
                         .AddCommand<InitChangelogCommand>("changelog")
@@ -68,6 +69,11 @@ Learn more at https://github.com/easybuild-org/EasyBuild.ShipIt"
                     init
                         .AddCommand<InitWorkflowsCommand>("workflows")
                         .WithDescription("Create recommended GitHub Actions workflows")
+                    |> ignore
+
+                    init
+                        .AddCommand<InitGithubCommand>("github")
+                        .WithDescription("Apply recommended GitHub repository settings")
                     |> ignore
             )
             |> ignore

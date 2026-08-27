@@ -24,6 +24,7 @@ Then, if the `--skip-pull-request` option is not passed, it will create a pull r
 
 Learn more about:
 
+- [`init` command](#init-command)
 - [How is the version calculated?](#how-is-the-version-calculated)
 - [Commit conventions](#commit-conventions)
 - [CLI options](#cli-options)
@@ -43,13 +44,16 @@ dotnet tool install EasyBuild.ShipIt
 # Initialize your project (optional)
 dotnet shipit init changelog
 
+# Apply the recommended GitHub settings (optional)
+dotnet shipit init github
+
 # Run the tool
 dotnet shipit
 ```
 
 ### `init` command
 
-The `init` command provides subcommands to scaffold the files needed to start using ShipIt.
+The `init` command provides subcommands to scaffold the files and configure the GitHub settings needed to start using ShipIt.
 
 #### `init changelog`
 
@@ -80,6 +84,45 @@ This creates:
 
 The command fails if any of the workflow files already exist.
 
+#### `init github`
+
+Apply the [recommended GitHub settings](#recommendations) to the repository detected from your `origin` remote:
+
+```bash
+dotnet shipit init github
+
+# Preview what would change, without applying anything
+dotnet shipit init github --dry-run
+```
+
+It requires the [GitHub CLI](https://cli.github.com/) to be installed and authenticated, and configures:
+
+- `Allow merge commits` -> disabled
+- `Allow squash merging` -> enabled
+- `Allow rebase merging` -> enabled
+- The default squash merge commit title -> `Pull request title`
+- `Allow GitHub Actions to create and approve pull requests` -> enabled
+
+Only the settings that differ from the recommendation are sent to GitHub, so the command is safe to re-run.
+
+##### `--org`
+
+`Allow GitHub Actions to create and approve pull requests` also exists at the organization level, and a
+restrictive organization policy prevents a repository from enabling it. When this happens, the command
+reports it and points you at the organization setting.
+
+An organization owner can lift the policy and configure the repository in one go:
+
+```bash
+dotnet shipit init github --org
+```
+
+This requires the `admin:org` scope, which you can request with:
+
+```bash
+gh auth refresh -h github.com -s admin:org
+```
+
 ### CLI manual
 
 ```text
@@ -105,14 +148,14 @@ OPTIONS:
         --remote-repo <REPO>                            Git remote repository name
         --skip-invalid-commit                           Skip invalid commits instead of failing
         --skip-merge-commit                             Skip merge commits when generating the changelog (commit messages starting with 'Merge ')
-        --dry-run                                       Preview the changes without modifying any files or creating pull requests.
+        --dry-run                                       Preview the changes that would be made without actually applying them
     -v, --version                                       Show version information
 
 COMMANDS:
     version
     conventions    List supported Conventional Commit types
     github         Publish to GitHub
-    init           Initialize project configuration files
+    init           Initialize project configuration and GitHub settings
 ```
 
 ## How is the version calculated?
@@ -301,10 +344,19 @@ Because EasyBuild.ShipIt relies on your commit messages, it is recommended to us
 
 This avoids the creation of invalid commits like `Merge pull request ...`.
 
-To help enforce this convention, you can go to your Org/Repo GitHub settings:
+To help enforce this convention, you can go to your Repo GitHub settings, in the `General > Pull Requests` section:
 
-1. Disable the `Allow merge commits` option in the `General > Pull Requests` section.
-2. Enable `Allow squash merging` option and choose `Pull request title` in the dropdown.
+1. Disable the `Allow merge commits` option.
+2. Enable the `Allow squash merging` option and choose `Pull request title` in the dropdown.
+3. Enable the `Allow rebase merging` option.
+
+Then, in the `Actions > General > Workflow permissions` section:
+
+<!-- markdownlint-disable-next-line -->
+4. Enable `Allow GitHub Actions to create and approve pull requests`, so ShipIt can open the release pull request.
+
+> [!TIP]
+> [`dotnet shipit init github`](#init-github) applies all of these settings for you using the GitHub CLI.
 
 Additionally, you can configure this [GitHub Actions](https://github.com/amannn/action-semantic-pull-request) to validate PRs titles.
 
@@ -637,7 +689,9 @@ Below is an example of how to use it, so it updates the CHANGELOG.md file in a p
 
 #### Requirements
 
-1. Go to GitHub settings of your Org or Repo, and enable `Actions > General > Allow GitHub Actions to create and approve pull requests`.
+1. Enable `Actions > General > Allow GitHub Actions to create and approve pull requests` in your Repo settings, either by running [`dotnet shipit init github`](#init-github) or manually.
+
+    This setting also exists at the Org level, and a restrictive Org policy prevents a Repo from enabling it. See [`--org`](#--org) for that case.
 
     If you prefer, you can also create a Personal Access Token (PAT) and use it instead of `secrets.GITHUB_TOKEN`.
 

@@ -31,6 +31,19 @@ type InitWorkflowsSettings() =
     /// </summary>
     member val Cwd = System.Environment.CurrentDirectory with get, set
 
+type InitGithubSettings() =
+    inherit CommandSettings()
+
+    [<CommandOption("--org")>]
+    [<Description("Also allow GitHub Actions to create and approve pull requests at the organization level. Requires the 'admin:org' scope")>]
+    [<DefaultValue(false)>]
+    member val Org: bool = false with get, set
+
+    [<CommandOption("--dry-run")>]
+    [<Description("Preview the changes without applying them")>]
+    [<DefaultValue(false)>]
+    member val DryRun: bool = false with get, set
+
 type SharedSettings() =
 
     inherit CommandSettings()

@@ -45,6 +45,7 @@
         <Compile Include="Commands/Conventions.fs" />
         <Compile Include="Commands/InitChangelog.fs" />
         <Compile Include="Commands/InitWorkflows.fs" />
+        <Compile Include="Commands/InitGithub.fs" />
         <Compile Include="Main.fs" />
     </ItemGroup>
     <ItemGroup>
