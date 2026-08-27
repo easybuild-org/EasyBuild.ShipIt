@@ -36,6 +36,7 @@ type InitWorkflowsTests() =
             let workflowsDir = Path.Combine(tempDir, ".github", "workflows")
             Expect.isTrue (Directory.Exists(workflowsDir))
             Expect.isTrue (File.Exists(Path.Combine(workflowsDir, "conventional-pr-title.yml")))
+            Expect.isTrue (File.Exists(Path.Combine(workflowsDir, "test.yml")))
             Expect.isTrue (File.Exists(Path.Combine(workflowsDir, "easybuild-shipit.yml")))
         )
 
@@ -58,6 +59,7 @@ type InitWorkflowsTests() =
 
             Expect.equal exitCode 1
 
-            // The other file should not have been created
+            // The other files should not have been created
+            Expect.isFalse (File.Exists(Path.Combine(workflowsDir, "test.yml")))
             Expect.isFalse (File.Exists(Path.Combine(workflowsDir, "easybuild-shipit.yml")))
         )

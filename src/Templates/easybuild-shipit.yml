@@ -23,6 +23,8 @@ jobs:
   shipit-pr:
     name: ShipIt - Pull Request
     runs-on: ubuntu-latest
+    # 'completed' fires whatever the conclusion is, so a failed test run has to be filtered out.
+    if: "github.event.workflow_run.conclusion == 'success'"
     steps:
       - uses: actions/checkout@v6
         with:
@@ -35,7 +37,7 @@ jobs:
           global-json-file: global.json
       - name: ShipIt (Pull Request)
         run: |
-          dotent tool restore
+          dotnet tool restore
           dotnet shipit
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -45,7 +47,7 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     # Only trigger this workflow when a commit starting with `chore: release ` is pushed.
-    if: "startsWith(github.event.workflow_run.head_commit.message, 'chore: release ')"
+    if: "github.event.workflow_run.conclusion == 'success' && startsWith(github.event.workflow_run.head_commit.message, 'chore: release ')"
     steps:
       - uses: actions/checkout@v6
       # Configure how you want to publish your package, e.g. using the NuGet CLI, dotnet CLI, NPM, etc.
