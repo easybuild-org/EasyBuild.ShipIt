@@ -80,7 +80,8 @@ dotnet shipit init workflows
 This creates:
 
 - `conventional-pr-title.yml` – validates pull request titles follow Conventional Commits
-- `easybuild-shipit.yml` – example workflow for running ShipIt in CI/CD
+- `test.yml` – builds and tests your project on every pull request and push to `main`
+- `easybuild-shipit.yml` – example workflow for running ShipIt in CI/CD, once `test.yml` succeeded on `main`
 
 The command fails if any of the workflow files already exist.
 

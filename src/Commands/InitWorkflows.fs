@@ -32,6 +32,7 @@ type InitWorkflowsCommand() =
         let files =
             [
                 "conventional-pr-title.yml"
+                "test.yml"
                 "easybuild-shipit.yml"
             ]
 
