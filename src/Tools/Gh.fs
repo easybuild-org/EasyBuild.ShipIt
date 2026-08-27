@@ -248,6 +248,58 @@ type LabelCommand() =
         )
         |> Task.RunSynchronously
 
+module Api =
+
+    [<RequireQualifiedAccess>]
+    type Method =
+        | Get
+        | Patch
+        | Put
+
+        member this.AsText =
+            match this with
+            | Get -> "GET"
+            | Patch -> "PATCH"
+            | Put -> "PUT"
+
+    [<RequireQualifiedAccess>]
+    type Field =
+        /// <summary>Value is always sent as a string (<c>gh api -f</c>)</summary>
+        | Raw of key: string * value: string
+        /// <summary>Value type is inferred by GitHub CLI, so <c>true</c> is sent as a boolean (<c>gh api -F</c>)</summary>
+        | Typed of key: string * value: string
+
+type ApiCommand() =
+
+    member _.Request(method: Api.Method, endpoint: string, ?fields: Api.Field list) =
+        let appendFields (cmdLine: CmdLine) =
+            (cmdLine, defaultArg fields [])
+            ||> List.fold (fun acc field ->
+                match field with
+                | Api.Field.Raw(key, value) ->
+                    acc |> CmdLine.appendPrefix "-f" $"%s{key}=%s{value}"
+                | Api.Field.Typed(key, value) ->
+                    acc |> CmdLine.appendPrefix "-F" $"%s{key}=%s{value}"
+            )
+
+        try
+            let struct (standardOutput, _) =
+                Command.ReadAsync(
+                    "gh",
+                    CmdLine.empty
+                    |> CmdLine.appendRaw "api"
+                    |> CmdLine.appendPrefix "--method" method.AsText
+                    |> CmdLine.appendRaw endpoint
+                    |> appendFields
+                    |> CmdLine.toString
+                )
+                |> Task.RunSynchronously
+
+            Ok standardOutput
+        with
+        | :? ExitCodeReadException as ex -> Error(ex.StandardError.Trim())
+        | ex -> Error ex.Message
+
 type CLI() =
 
     member _.IsAvailable() =
@@ -261,6 +313,7 @@ type CLI() =
     member _.auth = AuthCommand()
     member _.pr = PRCommand()
     member _.label = LabelCommand()
+    member _.api = ApiCommand()
 
 // 1. git push origin HEAD:release/1.0.0 --force
 // 2. gh create pr --base main --head release/1.0.0 --title "Release 1.0.0" --body "Automated release PR"

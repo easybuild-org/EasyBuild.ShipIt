@@ -35,6 +35,8 @@ module Expect =
 
     let isNotEmpty actual = Expect.isNotEmpty actual ""
 
+    let isEmpty actual = Expect.isEmpty actual ""
+
     let isNonEmpty actual = Expect.isNonEmpty actual ""
 
     let isOk actual = Expect.isOk actual ""
