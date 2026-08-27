@@ -105,7 +105,7 @@ OPTIONS:
         --remote-repo <REPO>                            Git remote repository name
         --skip-invalid-commit                           Skip invalid commits instead of failing
         --skip-merge-commit                             Skip merge commits when generating the changelog (commit messages starting with 'Merge ')
-        --dry-run [LEVEL]               minimal         Preview the changes without modifying any files or creating pull requests. Optionally, provide 'minimal' or 'verbose'. Default is 'minimal'
+        --dry-run                                       Preview the changes without modifying any files or creating pull requests.
     -v, --version                                       Show version information
 
 COMMANDS:
