@@ -17,8 +17,8 @@ Tool for generating changelog based on Git history based on [Conventional Commit
 
 ## How does it work?
 
-EasyBuild.ShipIt search for any `CHANGELOG.md`, for each of them look at the commits since the last
-released commit (based on the `last_commit_released` configuration) and generate a new changelog entry based on the commit messages.
+EasyBuild.ShipIt searches for any `CHANGELOG.md` files and, for each one, looks at the commits since the last
+released commit (based on the `last_commit_released` configuration) and generates a new changelog entry based on the commit messages.
 
 Then, if the `--skip-pull-request` option is not passed, it will create a pull request with the updated changelog file.
 
@@ -119,7 +119,7 @@ COMMANDS:
 
 ### Stable versions
 
-The version is calculated based on the commit messages since last released, who are contributing to the changelog file (based on the `include` and `exclude` configuration).
+The version is calculated based on the commit messages since last released, that are contributing to the changelog file (based on the `include` and `exclude` configuration).
 
 Rules are the following:
 
@@ -195,7 +195,7 @@ Rules are the following:
 
 **💡 Tips**
 
-EasyBuild.Changelog use the last version in the changelog file to compute the next version.
+EasyBuild.Changelog uses the last version in the changelog file to compute the next version.
 
 For this reason, while working on a pre-release, it is advised to work in a separate branch from the main branch. This allows you to work on the pre-release while still being able to release new versions on the main branch.
 
@@ -299,7 +299,7 @@ let parts = String.split " " "Hello World"
 
 Because EasyBuild.ShipIt relies on your commit messages, it is recommended to use Squash and Merge or Rebase and Merge when merging pull requests to keep a clean commit history.
 
-This avoid the creation of invalid commits like `Merge pull request ...`.
+This avoids the creation of invalid commits like `Merge pull request ...`.
 
 To help enforce this convention, you can go to your Org/Repo GitHub settings:
 
@@ -369,7 +369,7 @@ When this option is passed, the tool will skip any merge commit (commit messages
 
 When this option is passed, the generated version will be a pre-release version.
 
-Optionsally, you can provide a prefix for the pre-release version. If no prefix is provided, it will default to `beta`.
+Optionally, you can provide a prefix for the pre-release version. If no prefix is provided, it will default to `beta`.
 
 ### `--mode`
 
@@ -424,7 +424,7 @@ You should set it up manually only if you are adopting EasyBuild.ShipIt in an ex
 
 **type:** string[]
 
-Allows to include commits from other paths. This is useful for monorepo where you have multiple projects in the same repository.
+Allows you to include commits from other paths. This is useful for monorepo where you have multiple projects in the same repository.
 
 ```yml
 include:
@@ -433,7 +433,7 @@ include:
 ```
 
 > [!NOTE]
-> It always include files in the same directory as the changelog file, so you don't need to include it in the configuration.
+> It always includes files in the same directory as the changelog file, so you don't need to include it in the configuration.
 <!-- markdownlint-disable-next-line -->
 > [!TIP]
 > EasyBuild.ShipIt is using Microsoft.Extensions.FileSystemGlobbing to match the files to include. Please refer to [their documentation](https://learn.microsoft.com/en-us/dotnet/core/extensions/file-globbing) for more information about the supported patterns.
@@ -442,7 +442,7 @@ include:
 
 **type:** string[]
 
-Allows to exclude commits from specific paths.
+Allows you to exclude commits from specific paths.
 
 ```yml
 exclude:
@@ -513,7 +513,7 @@ Use a regex pattern to find the text to replace with the new version.
 | `pattern` | Pattern used to find the text to replace. |
 
 > [!IMPORTANT]
-> The regex with replace the full match with the new version. Make sure to use a regex that only matches the version part of the file.
+> The regex will replace the full match with the new version. Make sure to use a regex that only matches the version part of the file.
 >
 > For example, if you want to update:
 >
@@ -627,19 +627,19 @@ When working with production and staging environments, you can use the `pre_rele
 
 To do that, you need use `--pre-release` CLI option in your staging environment and not use it in your production environment.
 
-We want to use the CLI option here instead of the configuration as it allows to easily switch between pre-release and stable versions without having to change the configuration file.
+We want to use the CLI option here instead of the configuration as it allows you to easily switch between pre-release and stable versions without having to change the configuration file.
 
 ### GitHub Actions (auto release)
 
 EasyBuild.ShipIt has been designed to make it easy to integrate into your CI/CD pipeline, and in particular with GitHub Actions.
 
-Below is an example of how to use it, so it update the CHANGELOG.md file in a pull request. Once the pull request is merged, it will trigger a workflow to publish the packages.
+Below is an example of how to use it, so it updates the CHANGELOG.md file in a pull request. Once the pull request is merged, it will trigger a workflow to publish the packages.
 
 #### Requirements
 
 1. Go to GitHub settings of your Org or Repo, and enable `Actions > General > Allow GitHub Actions to create and approve pull requests`.
 
-    If you prefers, you can also create a Personal Access Token (PAT) and use it instead of `secrets.GITHUB_TOKEN`.
+    If you prefer, you can also create a Personal Access Token (PAT) and use it instead of `secrets.GITHUB_TOKEN`.
 
 2. Create a `.github/workflows/easybuild-shipit.yml` file with the following content:
 
@@ -687,7 +687,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       # Configure how you want to publish your package, e.g. using the NuGet CLI, dotnet CLI, NPM, etc.
-      # It is recommanded to use Trusted Publishing to avoid having to manage API keys in your repository.
+      # It is recommended to use Trusted Publishing to avoid having to manage API keys in your repository.
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
         with:
@@ -715,7 +715,7 @@ jobs:
 
 The name "ShipIt" is a reference to the famous phrase "Ship it!".
 
-It is also to avoid future potential conflicts in case .NET team decide to add `dotnet release` in .NET CLI.
+It also helps avoid future potential conflicts in case the .NET team decides to add `dotnet release` in the .NET CLI.
 
 I felt like `shipit` was a fun and less risky in this regard.
 
