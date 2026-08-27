@@ -14,6 +14,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          # The test suite reads commits by SHA, which are missing from a shallow clone.
+          fetch-depth: 0
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
         with:
