@@ -31,6 +31,7 @@ Learn more about:
 - [Configuration](#configuration)
 - [Monorepo support](#monorepo-support)
 - [Recipes](#recipes)
+    - [Setting up a repository](#setting-up-a-repository)
     - [Prod / staging environments](#prod--staging-environments)
     - [GitHub Actions (auto release)](#github-actions-auto-release)
 - [Why the name "ShipIt"?](#why-the-name-shipit)
@@ -674,6 +675,42 @@ Learn more about the `include` configuration in the [Configuration](#configurati
 
 ## Recipes
 
+### Setting up a repository
+
+1. Create the changelog file.
+
+    ```bash
+    dotnet shipit init changelog
+    ```
+
+2. Apply the [recommended GitHub settings](#init-github). This step requires the [GitHub CLI](https://cli.github.com/) to be installed and authenticated.
+
+    ```bash
+    dotnet shipit init github
+    ```
+
+3. Create the [GitHub Actions workflows](#init-workflows).
+
+    ```bash
+    dotnet shipit init workflows
+    ```
+
+4. Commit and push the new files.
+
+Steps 1 and 3 fail if a file already exists at the target path. Step 2 sends only the settings that differ from the recommendation, and can be run again at any time.
+
+When adopting ShipIt in an existing repository, use `--dry-run` to list the settings that differ from the recommendation.
+
+```bash
+dotnet shipit init github --dry-run
+```
+
+On a repository owned by an organization, `Allow GitHub Actions to create and approve pull requests` can be blocked by an organization policy. An organization owner lifts the policy with [`--org`](#--org).
+
+```bash
+dotnet shipit init github --org
+```
+
 ### Prod / staging environments
 
 When working with production and staging environments, you can use the `pre_release` configuration to generate pre-release versions for the staging environment and stable versions for the production environment.
@@ -690,7 +727,12 @@ Below is an example of how to use it, so it updates the CHANGELOG.md file in a p
 
 #### Requirements
 
-1. Enable `Actions > General > Allow GitHub Actions to create and approve pull requests` in your Repo settings, either by running [`dotnet shipit init github`](#init-github) or manually.
+> [!TIP]
+> Both requirements below can be set up for you:
+> [`dotnet shipit init github`](#init-github) applies the first one,
+> [`dotnet shipit init workflows`](#init-workflows) creates the second one.
+
+1. Enable `Actions > General > Allow GitHub Actions to create and approve pull requests` in your Repo settings.
 
     This setting also exists at the Org level, and a restrictive Org policy prevents a Repo from enabling it. See [`--org`](#--org) for that case.
 
