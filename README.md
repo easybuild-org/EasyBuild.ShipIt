@@ -447,6 +447,8 @@ Preview the changes without modifying any files or creating pull requests. This 
 
 > [!TIP]
 > `--dry-run` can be run on a dirty repository since it does not modify any files.
+>
+> `--dry-run` can be run on a branch not listed in `--allow-branch`. A warning is shown and the preview is computed from the current branch.
 
 ## Configuration
 

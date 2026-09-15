@@ -57,7 +57,12 @@ let execute (settings: SharedSettings) (orchestratorResolver: Orchestrator.IReso
             if not settings.DryRun then
                 do! Verify.dirty ()
 
-            do! Verify.branch settings
+            match Verify.branch settings with
+            | Error error when settings.DryRun ->
+                Log.warning error
+                Log.warning "Dry run: the preview below is computed from the current branch."
+                Log.newLine ()
+            | res -> do! res
 
             let changelogFiles = Changelog.find settings
 
