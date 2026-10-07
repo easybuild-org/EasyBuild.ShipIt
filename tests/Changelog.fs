@@ -224,6 +224,7 @@ type GenerateNewVersionSectionTests() =
                                 )
                                 |> gitCommitToCommitForRelease
                             ]
+                        DependencyUpdates = []
                         LastCommitSha = "0b1899bb03d3eb86a30c84aa4c66c037527fbd14"
                         Changelog = dummyChangelog
                     }
@@ -256,6 +257,7 @@ type GenerateNewVersionSectionTests() =
                                 )
                                 |> gitCommitToCommitForRelease
                             ]
+                        DependencyUpdates = []
                         LastCommitSha = "0b1899bb03d3eb86a30c84aa4c66c037527fbd14"
                         Changelog = dummyChangelog
                     }
@@ -300,6 +302,7 @@ type GenerateNewVersionSectionTests() =
                                 )
                                 |> gitCommitToCommitForRelease
                             ]
+                        DependencyUpdates = []
                         LastCommitSha = "0b1899bb03d3eb86a30c84aa4c66c037527fbd14"
                         Changelog = dummyChangelog
                     }
@@ -356,6 +359,7 @@ type GenerateNewVersionSectionTests() =
                                 )
                                 |> gitCommitToCommitForRelease
                             ]
+                        DependencyUpdates = []
                         LastCommitSha = "0b1899bb03d3eb86a30c84aa4c66c037527fbd14"
                         Changelog = dummyChangelog
                     }
@@ -405,6 +409,7 @@ type GenerateNewVersionSectionTests() =
                                 )
                                 |> gitCommitToCommitForRelease
                             ]
+                        DependencyUpdates = []
                         LastCommitSha = "0b1899bb03d3eb86a30c84aa4c66c037527fbd14"
                         Changelog = dummyChangelog
                     }
@@ -453,6 +458,7 @@ This is a list of changes:
                                 )
                                 |> gitCommitToCommitForRelease
                             ]
+                        DependencyUpdates = []
                         LastCommitSha = "0b1899bb03d3eb86a30c84aa4c66c037527fbd14"
                         Changelog = dummyChangelog
                     }
@@ -486,6 +492,45 @@ This is a list of changes:
                                     "feat: Add another feature"
                                 )
                                 |> gitCommitToCommitForRelease
+                            ]
+                        DependencyUpdates = []
+                        LastCommitSha = "0b1899bb03d3eb86a30c84aa4c66c037527fbd14"
+                        Changelog = dummyChangelog
+                    }
+                |> verifyMarkdown
+        }
+
+    [<Test>]
+    member _.``Changelog.generateNewVersionSection lists dependency updates after the commits``() =
+        task {
+            return!
+                Changelog.generateNewVersionSection
+                    {
+                        Hostname = "github.com"
+                        Owner = "owner"
+                        Repository = "repository"
+                    }
+                    (Some "fefd5e0bf242e034f86ad23a886e2d71ded4f7bb")
+                    {
+                        NewVersion = Semver.SemVersion(1, 1, 0)
+                        CommitsForRelease =
+                            [
+                                Git.Commit.Create(
+                                    "0b1899bb03d3eb86a30c84aa4c66c037527fbd14",
+                                    "feat: Add feature"
+                                )
+                                |> gitCommitToCommitForRelease
+                            ]
+                        DependencyUpdates =
+                            [
+                                {
+                                    Name = "Lib.Plugin"
+                                    NewVersion = Semver.SemVersion(2, 0, 1)
+                                }
+                                {
+                                    Name = "Lib.Core"
+                                    NewVersion = Semver.SemVersion(1, 4, 0)
+                                }
                             ]
                         LastCommitSha = "0b1899bb03d3eb86a30c84aa4c66c037527fbd14"
                         Changelog = dummyChangelog
@@ -534,6 +579,7 @@ This is a list of changes:
                                 )
                                 |> gitCommitToCommitForRelease
                             ]
+                        DependencyUpdates = []
                         LastCommitSha = "0b1899bb03d3eb86a30c84aa4c66c037527fbd14"
                         Changelog = dummyChangelog
                     }
@@ -585,6 +631,7 @@ type UpdateChangelogWithNewVersionTests() =
                                 )
                                 |> gitCommitToCommitForRelease
                             ]
+                        DependencyUpdates = []
                         LastCommitSha = "0b1899bb03d3eb86a30c84aa4c66c037527fbd14"
                         Changelog = changelogInfo
                     }
@@ -633,6 +680,7 @@ type UpdateChangelogWithNewVersionTests() =
                                 )
                                 |> gitCommitToCommitForRelease
                             ]
+                        DependencyUpdates = []
                         LastCommitSha = "0b1899bb03d3eb86a30c84aa4c66c037527fbd14"
                         Changelog = changelogInfo
                     }

@@ -208,6 +208,8 @@ You can mix different types of commits, the highest version will be used (`break
 * fix: first fix # => 1.3.0
 ```
 
+A release of a changelog listed in [`depends_on`](#depends_on) counts as a `fix` commit.
+
 ### Pre-release versions
 
 A pre-release will be generated if you set [`pre_release`](#pre_release) configuration or if you pass `--pre-release` CLI option.
@@ -508,6 +510,35 @@ exclude:
 > [!TIP]
 > EasyBuild.ShipIt is using Microsoft.Extensions.FileSystemGlobbing to match the files to include. Please refer to [their documentation](https://learn.microsoft.com/en-us/dotnet/core/extensions/file-globbing) for more information about the supported patterns.
 
+### `depends_on`
+
+**type:** string[]
+
+Changelogs this project depends on. When one of them is released, this project is released in the same run.
+
+Each entry is a path to a changelog file, or to a directory containing a `CHANGELOG.md`, relative to the current changelog file.
+
+```yml
+depends_on:
+  - ../Lib.Core/
+  - ../Lib.Plugin/CHANGELOG.md
+```
+
+List only the direct dependencies. Releases cascade to the dependents of a dependent.
+
+A release caused by a dependency bumps the patch version, or the pre-release number in pre-release mode. The new version gets a `🔗 Dependencies` section:
+
+```md
+### 🔗 Dependencies
+
+* `Lib.Plugin` updated to 2.0.1
+```
+
+Changelogs are processed after their dependencies. EasyBuild.ShipIt fails if `depends_on` forms a cycle or points to an unknown changelog.
+
+> [!NOTE]
+> Only a release triggers the dependents. A dependency change that does not release, for example a `chore` commit, does not trigger them.
+
 ### `pre_release`
 
 **type:** string
@@ -525,6 +556,8 @@ pre_release: beta
 Lowest number has the highest priority. This is useful to determine which changelog file should be updated first when generating a new release.
 
 If a changelog has no priority, it will be considered as having the lowest priority (i.e. it will be updated last).
+
+[`depends_on`](#depends_on) takes precedence: a changelog is always updated after its dependencies.
 
 ```yml
 priority: 1
@@ -672,6 +705,8 @@ repo/
 It means that 2 projects will be released, `project-a` and `project-b`. By default, only the commits that are in the same directory as the changelog file will be considered for the release of each project.
 
 If you want to include commits from the `Shared` directory for both projects, you can use the `include` configuration to include the `Shared` directory for both changelog files.
+
+If `project-b` depends on `project-a` and must be released when `project-a` is released, use the [`depends_on`](#depends_on) configuration in `project-b`.
 
 Learn more about the `include` configuration in the [Configuration](#configuration) section.
 

@@ -39,6 +39,9 @@ module Expect =
 
     let isNonEmpty actual = Expect.isNonEmpty actual ""
 
+    let stringContains (actual: string) (expected: string) =
+        Expect.stringContains actual expected ""
+
     let isOk actual = Expect.isOk actual ""
 
     let isError actual = Expect.isError actual ""

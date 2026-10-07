@@ -48,6 +48,10 @@ type Table private () =
         table
 
 let private renderSummaryTable (releaseContexts: ReleaseContext list) (gitRepositoryRoot: string) =
+    let hasDependencyUpdates =
+        releaseContexts
+        |> List.exists (fun releaseContext -> releaseContext.DependencyNames.Length > 0)
+
     let addRows (table: STable) =
         releaseContexts
         |> List.iter (fun releaseContext ->
@@ -71,6 +75,12 @@ let private renderSummaryTable (releaseContexts: ReleaseContext list) (gitReposi
                         bumpInfo.NewVersion.ToString()
                     ]
 
+            let rows =
+                if hasDependencyUpdates then
+                    rows @ [ releaseContext.DependencyNames |> String.concat ", " ]
+                else
+                    rows
+
             Table.withRow rows table |> ignore
         )
 
@@ -81,6 +91,11 @@ let private renderSummaryTable (releaseContexts: ReleaseContext list) (gitReposi
     |> Table.withColumn "Project"
     |> Table.withColumn (TableColumn.column "Status" |> TableColumn.centered)
     |> Table.withColumn (TableColumn.column "New Version" |> TableColumn.centered)
+    |> fun table ->
+        if hasDependencyUpdates then
+            Table.withColumn "Updated dependencies" table
+        else
+            table
     |> Table.withRowSeparators
     |> addRows
     |> Log.output.Write

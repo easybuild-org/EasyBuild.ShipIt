@@ -34,6 +34,7 @@
         <Compile Include="ConfigLoader.fs" />
         <Compile Include="Generate/Types.fs" />
         <Compile Include="Generate/Verify.fs" />
+        <Compile Include="Generate/Dependencies.fs" />
         <Compile Include="Generate/Changelog.fs" />
         <Compile Include="Generate/Updater.fs" />
         <Compile Include="Generate/ReleaseContext.fs" />

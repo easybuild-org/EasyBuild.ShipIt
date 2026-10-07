@@ -152,6 +152,7 @@ type ComputeTests() =
                                 |> Result.valueOr failwith
                         }
                     ]
+                DependencyUpdates = []
                 LastCommitSha = "49c0699af98a67f1e8efcac8b1467b283a244aa8"
                 Changelog = changelogInfo
             }
@@ -201,6 +202,7 @@ type ComputeTests() =
                                 |> Result.valueOr failwith
                         }
                     ]
+                DependencyUpdates = []
                 LastCommitSha = "49c0699af98a67f1e8efcac8b1467b283a244aa8"
                 Changelog = changelogInfo
             }
@@ -245,6 +247,7 @@ type ComputeTests() =
                                 |> Result.valueOr failwith
                         }
                     ]
+                DependencyUpdates = []
                 LastCommitSha = "49c0699af98a67f1e8efcac8b1467b283a244aa8"
                 Changelog = changelogInfo
             }
@@ -354,6 +357,7 @@ type ComputeTests() =
                                 |> Result.valueOr failwith
                         }
                     ]
+                DependencyUpdates = []
                 LastCommitSha = "49c0699af98a67f1e8efcac8b1467b283a244aa8"
                 Changelog = changelogInfo
             }
@@ -408,6 +412,7 @@ type ComputeTests() =
                                 |> Result.valueOr failwith
                         }
                     ]
+                DependencyUpdates = []
                 LastCommitSha = "49c0699af98a67f1e8efcac8b1467b283a244aa8"
                 Changelog = changelogInfo
             }
@@ -535,6 +540,7 @@ feat: some description
                                 |> Result.valueOr failwith
                         }
                     ]
+                DependencyUpdates = []
                 LastCommitSha = "49c0699af98a67f1e8efcac8b1467b283a244aa8"
                 Changelog = changelogInfo
             }
@@ -1276,6 +1282,7 @@ type ReleaseContextApplyTests() =
                             )
                             |> gitCommitToCommitForRelease
                         ]
+                    DependencyUpdates = []
                     LastCommitSha = "0b1899bb03d3eb86a30c84aa4c66c037527fbd14"
                     Changelog = changelogInfo
                 }
@@ -1326,6 +1333,7 @@ type ReleaseContextApplyTests() =
                             )
                             |> gitCommitToCommitForRelease
                         ]
+                    DependencyUpdates = []
                     LastCommitSha = "0b1899bb03d3eb86a30c84aa4c66c037527fbd14"
                     Changelog = changelogInfo
                 }
@@ -1378,6 +1386,7 @@ type ReleaseContextApplyTests() =
                             )
                             |> gitCommitToCommitForRelease
                         ]
+                    DependencyUpdates = []
                     LastCommitSha = "0b1899bb03d3eb86a30c84aa4c66c037527fbd14"
                     Changelog = changelogInfo
                 }
@@ -1428,6 +1437,7 @@ type ReleaseContextApplyTests() =
                             )
                             |> gitCommitToCommitForRelease
                         ]
+                    DependencyUpdates = []
                     LastCommitSha = "0b1899bb03d3eb86a30c84aa4c66c037527fbd14"
                     Changelog = changelogInfo
                 }
@@ -1478,6 +1488,7 @@ type ReleaseContextApplyTests() =
                             )
                             |> gitCommitToCommitForRelease
                         ]
+                    DependencyUpdates = []
                     LastCommitSha = "0b1899bb03d3eb86a30c84aa4c66c037527fbd14"
                     Changelog = changelogInfo
                 }
@@ -1528,6 +1539,7 @@ type ReleaseContextApplyTests() =
                             )
                             |> gitCommitToCommitForRelease
                         ]
+                    DependencyUpdates = []
                     LastCommitSha = "0b1899bb03d3eb86a30c84aa4c66c037527fbd14"
                     Changelog = changelogInfo
                 }

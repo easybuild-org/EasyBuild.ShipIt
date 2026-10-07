@@ -169,6 +169,7 @@ type ChangelogMetadata =
         LastCommitReleased: string option
         Include: string list
         Exclude: string list
+        DependsOn: string list
         PreRelease: string option
         Priority: int option
         Name: string option
@@ -181,6 +182,7 @@ type ChangelogMetadata =
             LastCommitReleased = None
             Include = []
             Exclude = []
+            DependsOn = []
             PreRelease = None
             Priority = None
             Name = None
@@ -208,6 +210,9 @@ type ChangelogMetadata =
                 Exclude =
                     get.Optional.Field "exclude" (Decode.list Decode.string)
                     |> Option.defaultValue []
+                DependsOn =
+                    get.Optional.Field "depends_on" (Decode.list Decode.string)
+                    |> Option.defaultValue []
                 PreRelease = get.Optional.Field "pre_release" Decode.string
                 Priority = get.Optional.Field "priority" Decode.int
                 Name = get.Optional.Field "name" Decode.string
@@ -229,6 +234,9 @@ type ChangelogMetadata =
         |> Encode.Object.addFieldIfSome "name" metadata.Name Encode.string
         |> Encode.Object.addFieldIfNotEmpty "include" (metadata.Include |> List.map Encode.string)
         |> Encode.Object.addFieldIfNotEmpty "exclude" (metadata.Exclude |> List.map Encode.string)
+        |> Encode.Object.addFieldIfNotEmpty
+            "depends_on"
+            (metadata.DependsOn |> List.map Encode.string)
         |> Encode.Object.addFieldIfNotEmpty
             "updaters"
             (metadata.Updaters |> List.map ChangelogMetadata.Updater.Encoder)

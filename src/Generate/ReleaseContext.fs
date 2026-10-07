@@ -18,10 +18,11 @@ let getCommits (changelog: ChangelogInfo) =
 
     Git.getCommits commitFilter
 
-let computeVersion
+let computeVersionWithDependencies
     (settings: Settings.SharedSettings)
     (changelog: ChangelogInfo)
     (commitsForRelease: CommitForRelease list)
+    (dependencyUpdates: DependencyUpdate list)
     (refVersion: SemVersion)
     =
 
@@ -33,7 +34,7 @@ let computeVersion
         else
             changelog.Metadata.PreRelease
 
-    if commitsForRelease.IsEmpty then
+    if commitsForRelease.IsEmpty && dependencyUpdates.IsEmpty then
         None
     else if refVersion.IsPrerelease then
         match preRelease with
@@ -79,8 +80,9 @@ let computeVersion
             )
 
         let shouldBumpPatch =
-            commitsForRelease
-            |> List.exists (fun commit -> commit.SemanticCommit.Type = "fix")
+            not dependencyUpdates.IsEmpty
+            || commitsForRelease
+               |> List.exists (fun commit -> commit.SemanticCommit.Type = "fix")
 
         let bumpMajor () =
             refVersion
@@ -134,6 +136,14 @@ let computeVersion
             else
                 None
 
+let computeVersion
+    (settings: Settings.SharedSettings)
+    (changelog: ChangelogInfo)
+    (commitsForRelease: CommitForRelease list)
+    (refVersion: SemVersion)
+    =
+    computeVersionWithDependencies settings changelog commitsForRelease [] refVersion
+
 [<RequireQualifiedAccess>]
 module Matcher =
 
@@ -143,10 +153,11 @@ module Matcher =
     let inline addExcludePatterns (matcher: Matcher) (patterns: string list) =
         matcher.AddExcludePatterns(patterns)
 
-let compute
+let computeWithDependencies
     (settings: Settings.SharedSettings)
     (changelog: ChangelogInfo)
     (commitsCandidates: Git.Commit list)
+    (dependencyUpdates: DependencyUpdate list)
     (commitParserConfig: CommitParserConfig)
     =
 
@@ -253,7 +264,12 @@ Error
         {
             NewVersion = newVersion
             CommitsForRelease = commitsForRelease
-            LastCommitSha = commitsCandidates[0].Hash
+            DependencyUpdates = dependencyUpdates
+            LastCommitSha =
+                match commitsCandidates, changelog.Metadata.LastCommitReleased with
+                | commit :: _, _ -> commit.Hash
+                | [], Some lastCommitReleased -> lastCommitReleased
+                | [], None -> failwith "Cannot release a changelog without any commit"
             Changelog = changelog
         }
 
@@ -262,9 +278,24 @@ Error
     | Some version -> version |> makeBumpInfo |> BumpRequired
 
     | None ->
-        match computeVersion settings changelog commitsForRelease refVersion with
+        match
+            computeVersionWithDependencies
+                settings
+                changelog
+                commitsForRelease
+                dependencyUpdates
+                refVersion
+        with
         | Some newVersion -> makeBumpInfo newVersion |> BumpRequired
         | None -> NoVersionBumpRequired changelog
+
+let compute
+    (settings: Settings.SharedSettings)
+    (changelog: ChangelogInfo)
+    (commitsCandidates: Git.Commit list)
+    (commitParserConfig: CommitParserConfig)
+    =
+    computeWithDependencies settings changelog commitsCandidates [] commitParserConfig
 
 let apply (remoteConfig: RemoteConfig) (releaseContext: ReleaseContext) : Result<unit, string> =
     // Notify user about the status of each changelog in order
@@ -328,3 +359,57 @@ let apply (remoteConfig: RemoteConfig) (releaseContext: ReleaseContext) : Result
             | Error error ->
                 Error
                     $"Failed to apply updaters for changelog '{bumpInfo.Changelog.File.FullName}':\n\n%s{error}"
+
+/// A changelog is released when one of its depends_on changelogs is released in the same run.
+let computeAll
+    (settings: Settings.SharedSettings)
+    (getCommits: ChangelogInfo -> Git.Commit list)
+    (commitParserConfig: CommitParserConfig)
+    (changelogs: ChangelogInfo list)
+    =
+    result {
+        let! graph = Dependencies.resolve changelogs
+        let! sortedChangelogs = Dependencies.sort graph
+
+        let dependenciesByPath =
+            graph
+            |> List.map (fun (changelog, dependencies) -> changelog.File.FullName, dependencies)
+            |> Map.ofList
+
+        let releaseContexts, _ =
+            sortedChangelogs
+            |> List.fold
+                (fun (releaseContexts, newVersionsByPath) changelog ->
+                    let dependencyUpdates =
+                        dependenciesByPath[changelog.File.FullName]
+                        |> List.choose (fun dependency ->
+                            Map.tryFind dependency.File.FullName newVersionsByPath
+                            |> Option.map (fun newVersion ->
+                                {
+                                    Name =
+                                        dependency.NameOrDirectoryPath settings.GitRepositoryRoot
+                                    NewVersion = newVersion
+                                }
+                            )
+                        )
+
+                    let releaseContext =
+                        computeWithDependencies
+                            settings
+                            changelog
+                            (getCommits changelog)
+                            dependencyUpdates
+                            commitParserConfig
+
+                    let newVersionsByPath =
+                        match releaseContext with
+                        | BumpRequired bumpInfo ->
+                            Map.add changelog.File.FullName bumpInfo.NewVersion newVersionsByPath
+                        | NoVersionBumpRequired _ -> newVersionsByPath
+
+                    releaseContext :: releaseContexts, newVersionsByPath
+                )
+                ([], Map.empty)
+
+        return List.rev releaseContexts
+    }

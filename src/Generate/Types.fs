@@ -90,10 +90,17 @@ type CommitForRelease =
         SemanticCommit: CommitMessage
     }
 
+type DependencyUpdate =
+    {
+        Name: string
+        NewVersion: SemVersion
+    }
+
 type BumpInfo =
     {
         NewVersion: SemVersion
         CommitsForRelease: CommitForRelease list
+        DependencyUpdates: DependencyUpdate list
         LastCommitSha: string
         Changelog: ChangelogInfo
     }
@@ -101,3 +108,8 @@ type BumpInfo =
 type ReleaseContext =
     | NoVersionBumpRequired of ChangelogInfo
     | BumpRequired of BumpInfo
+
+    member this.DependencyNames =
+        match this with
+        | BumpRequired bumpInfo -> bumpInfo.DependencyUpdates |> List.map _.Name |> List.sort
+        | NoVersionBumpRequired _ -> []

@@ -73,22 +73,12 @@ let execute (settings: SharedSettings) (orchestratorResolver: Orchestrator.IReso
                 |> Seq.toList
                 |> List.sequenceResultM
 
-            let releaseContexts =
+            let! releaseContexts =
                 changelogs
-                // Order by priority if available (lower number means higher priority)
-                // Changelog without priority go to the end
-                |> List.sortWith (fun a b ->
-                    match a.Metadata.Priority, b.Metadata.Priority with
-                    | Some a', Some b' -> compare a' b'
-                    | Some _, None -> -1
-                    | None, Some _ -> 1
-                    | None, None -> 0
-                )
-                |> List.map (fun changelogInfo ->
-                    let commits = ReleaseContext.getCommits changelogInfo
-
-                    ReleaseContext.compute settings changelogInfo commits config.CommitParserConfig
-                )
+                |> ReleaseContext.computeAll
+                    settings
+                    ReleaseContext.getCommits
+                    config.CommitParserConfig
 
             // In dry-run mode, preview the changes without applying them
             if settings.DryRun then

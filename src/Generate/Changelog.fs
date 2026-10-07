@@ -241,6 +241,17 @@ let private writeSection
 
         writer.NewLine()
 
+let private writeDependenciesSection (writer: Writer) (dependencyUpdates: DependencyUpdate list) =
+    if dependencyUpdates.Length > 0 then
+        writer.AppendLine "### 🔗 Dependencies"
+        writer.NewLine()
+
+        for dependencyUpdate in dependencyUpdates |> List.sortBy _.Name do
+            writer.AppendLine
+                $"* `%s{dependencyUpdate.Name}` updated to %s{dependencyUpdate.NewVersion.ToString()}"
+
+        writer.NewLine()
+
 let generateNewVersionSection
     (remote: RemoteConfig)
     (previousReleasedSha: string option)
@@ -311,6 +322,7 @@ let generateNewVersionSection
     writeSection writer "🚀 Features" remote groupedCommits.Feats
     writeSection writer "🐞 Bug Fixes" remote groupedCommits.Fixes
     writeSection writer "⚡ Performance Improvements" remote groupedCommits.Perfs
+    writeDependenciesSection writer releaseContext.DependencyUpdates
 
     match previousReleasedSha with
     | Some sha ->

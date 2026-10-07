@@ -15,6 +15,7 @@
         <Compile Include="Verify.fs" />
         <Compile Include="Gh.fs" />
         <Compile Include="ReleaseContext.fs" />
+        <Compile Include="Dependencies.fs" />
         <Compile Include="Changelog.fs" />
         <Compile Include="InitChangelog.fs" />
         <Compile Include="InitWorkflows.fs" />

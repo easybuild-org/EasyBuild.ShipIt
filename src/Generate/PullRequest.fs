@@ -45,18 +45,33 @@ type PullRequestContext
             Ok "chore: release multiple projects"
 
     member _.PullRequestSummaryTable =
+        let hasDependencyUpdates =
+            items |> List.exists (fun item -> item.DependencyNames.Length > 0)
+
         let rows =
             items
             |> List.map (fun item ->
-                match item with
-                | NoVersionBumpRequired changelogInfo ->
-                    let changelogName = changelogInfo.NameOrDirectoryPath gitRepositoryRoot
+                let row =
+                    match item with
+                    | NoVersionBumpRequired changelogInfo ->
+                        let changelogName = changelogInfo.NameOrDirectoryPath gitRepositoryRoot
 
-                    $"| %s{changelogName} | ✅ | |"
-                | BumpRequired bumpInfo ->
-                    let changelogName = bumpInfo.Changelog.NameOrDirectoryPath gitRepositoryRoot
+                        $"| %s{changelogName} | ✅ | |"
+                    | BumpRequired bumpInfo ->
+                        let changelogName =
+                            bumpInfo.Changelog.NameOrDirectoryPath gitRepositoryRoot
 
-                    $"| %s{changelogName} | 🚀 | %s{bumpInfo.NewVersion.ToString()} |"
+                        $"| %s{changelogName} | 🚀 | %s{bumpInfo.NewVersion.ToString()} |"
+
+                if hasDependencyUpdates then
+                    let dependencyNames =
+                        item.DependencyNames
+                        |> List.map (fun name -> $"`%s{name}`")
+                        |> String.concat ", "
+
+                    $"%s{row} %s{dependencyNames} |"
+                else
+                    row
             )
 
         let hasUnnamedProject =
@@ -71,8 +86,12 @@ type PullRequestContext
             )
 
         [
-            "| Project | Status | New Version |"
-            "| --- | :---: | :---: |"
+            if hasDependencyUpdates then
+                "| Project | Status | New Version | Updated dependencies |"
+                "| --- | :---: | :---: | --- |"
+            else
+                "| Project | Status | New Version |"
+                "| --- | :---: | :---: |"
             yield! rows
             ""
             "**Legend:**"
