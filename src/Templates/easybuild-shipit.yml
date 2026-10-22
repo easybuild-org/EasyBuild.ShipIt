@@ -23,8 +23,11 @@ jobs:
   shipit-pr:
     name: ShipIt - Pull Request
     runs-on: ubuntu-latest
+    # Only run on the upstream repository.
     # 'completed' fires whatever the conclusion is, so a failed test run has to be filtered out.
-    if: "github.event.workflow_run.conclusion == 'success'"
+    if: >-
+      !github.event.repository.fork
+      && github.event.workflow_run.conclusion == 'success'
     steps:
       - uses: actions/checkout@v6
         with:
@@ -46,8 +49,11 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    # Only trigger this workflow when a commit starting with `chore: release ` is pushed.
-    if: "github.event.workflow_run.conclusion == 'success' && startsWith(github.event.workflow_run.head_commit.message, 'chore: release ')"
+    # Only run on the upstream repository, when a commit starting with `chore: release ` is pushed.
+    if: >-
+      !github.event.repository.fork
+      && github.event.workflow_run.conclusion == 'success'
+      && startsWith(github.event.workflow_run.head_commit.message, 'chore: release ')
     steps:
       - uses: actions/checkout@v6
       # Configure how you want to publish your package, e.g. using the NuGet CLI, dotnet CLI, NPM, etc.
